@@ -1,0 +1,198 @@
+<div class="post-detail-container" *ngIf="!loading()">
+  <div class="header-actions">
+    <a routerLink="/home" class="btn btn-ghost"><span class="material-icons">arrow_back</span> Back</a>
+  </div>
+
+  @if (post()) {
+    <div class="post-card card animate-item">
+      <div class="post-header">
+        <a [routerLink]="'/profile/' + post()?.authorId" class="post-author">
+          <img *ngIf="post()?.author?.profilePicUrl" [src]="post()?.author?.profilePicUrl" class="avatar avatar-md">
+          <div *ngIf="!post()?.author?.profilePicUrl" class="avatar avatar-md avatar-placeholder">
+            {{ post()?.author?.username?.charAt(0) | uppercase }}
+          </div>
+          <div class="author-info">
+            <span class="author-name">
+              <span>{{ post()?.author?.fullName || post()?.author?.username }}</span>
+              @if (post()?.author?.isVerified) {
+              <span class="verified-inline-badge material-icons" title="Verified Account">verified</span>
+              }
+            </span>
+            <span class="author-handle">@{{ post()?.author?.username }}</span>
+          </div>
+        </a>
+        <div class="post-meta">
+          <span class="post-time">{{ formatDate(post()!.createdAt) }}</span>
+        </div>
+      </div>
+
+      <div class="post-content">
+        <p>{{ post()?.content }}</p>
+      </div>
+
+      @if ((post()?.mediaUrls?.length || 0) > 0) {
+        <div class="post-media" (dblclick)="toggleLike()">
+          @if (isVideoPost()) {
+            <video [src]="post()!.mediaUrls[0]" controls playsinline preload="metadata"></video>
+          } @else {
+            <img [src]="post()!.mediaUrls[0]" alt="Post media">
+          }
+        </div>
+      }
+
+      <div class="post-actions">
+        <button class="action-btn" [class.active]="post()?.hasLiked" (click)="toggleLike()">
+          <span class="material-icons">{{ post()?.hasLiked ? 'favorite' : 'favorite_border' }}</span>
+          <span>{{ post()?.likesCount }}</span>
+        </button>
+        <button class="action-btn">
+          <span class="material-icons">chat_bubble_outline</span>
+          <span>{{ post()?.commentsCount }}</span>
+        </button>
+        <button class="action-btn">
+          <span class="material-icons">share</span>
+          <span>{{ post()?.sharesCount }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="comments-section card animate-item">
+      <h3 class="section-title">Comments</h3>
+      
+      <!-- Add Comment -->
+      <div class="add-comment">
+        <img *ngIf="authService.currentUser()?.profilePicUrl" [src]="authService.currentUser()?.profilePicUrl" class="avatar avatar-md">
+      <div *ngIf="!authService.currentUser()?.profilePicUrl" class="avatar avatar-md avatar-placeholder">
+        {{ authService.currentUser()?.username?.charAt(0) | uppercase }}
+      </div>
+      <div class="comment-input-wrapper">
+        <input
+          type="text"
+          placeholder="Write a comment..."
+          [(ngModel)]="newCommentText"
+          [disabled]="commentSubmitting()"
+          (keyup.enter)="addComment()">
+        <button
+          class="btn btn-primary btn-sm"
+          (click)="addComment()"
+          [disabled]="commentSubmitting() || !newCommentText.trim()">
+          {{ commentSubmitting() ? 'Posting...' : 'Post' }}
+        </button>
+      </div>
+      @if (commentError()) {
+        <p class="comment-error">{{ commentError() }}</p>
+      }
+    </div>
+
+      <!-- Comments List -->
+      <div class="comments-list">
+        @for (comment of comments(); track comment.commentId) {
+          <div class="comment-item">
+            <a [routerLink]="'/profile/' + comment.authorId">
+              <img *ngIf="comment.author?.profilePicUrl" [src]="comment.author?.profilePicUrl" class="avatar avatar-sm">
+              <div *ngIf="!comment.author?.profilePicUrl" class="avatar avatar-sm avatar-placeholder">
+                {{ comment.author?.username?.charAt(0) | uppercase }}
+              </div>
+            </a>
+            <div class="comment-body">
+              <div class="comment-header">
+                <span class="comment-author">
+                  <span>{{ comment.author?.fullName || comment.author?.username }}</span>
+                  @if (comment.author?.isVerified) {
+                  <span class="verified-inline-badge material-icons" title="Verified Account">verified</span>
+                  }
+                </span>
+                <span class="comment-time">{{ formatDate(comment.createdAt) }}</span>
+              </div>
+              <div class="comment-text">{{ comment.content }}</div>
+              <div class="comment-actions">
+                <button
+                  class="btn-ghost btn-sm comment-action"
+                  [class.active]="isCommentLiked(comment)"
+                  (click)="toggleCommentLike(comment)">
+                  <span class="material-icons">{{ isCommentLiked(comment) ? 'favorite' : 'favorite_border' }}</span>
+                  <span>Like</span>
+                  <span class="comment-action-count">{{ comment.likesCount || 0 }}</span>
+                </button>
+                <button
+                  class="btn-ghost btn-sm comment-action"
+                  [class.active]="isReplyingTo(comment.commentId)"
+                  (click)="toggleReplyBox(comment.commentId)">
+                  <span class="material-icons">reply</span>
+                  <span>Reply</span>
+                </button>
+              </div>
+
+              @if (isReplyingTo(comment.commentId)) {
+                <div class="reply-composer animate-item">
+                  <div class="comment-input-wrapper reply-input-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Write a reply..."
+                      [ngModel]="getReplyDraft(comment.commentId)"
+                      (ngModelChange)="updateReplyDraft(comment.commentId, $event)"
+                      [disabled]="isReplySubmitting(comment.commentId)"
+                      (keyup.enter)="submitReply(comment.commentId)">
+                    <button
+                      class="btn btn-primary btn-sm"
+                      (click)="submitReply(comment.commentId)"
+                      [disabled]="isReplySubmitting(comment.commentId) || !getReplyDraft(comment.commentId).trim()">
+                      {{ isReplySubmitting(comment.commentId) ? 'Replying...' : 'Reply' }}
+                    </button>
+                  </div>
+                  @if (getReplyError(comment.commentId)) {
+                    <p class="comment-error reply-error">{{ getReplyError(comment.commentId) }}</p>
+                  }
+                </div>
+              }
+
+              @if (comment.replies?.length > 0) {
+                <div class="replies-list">
+                  @for (reply of comment.replies; track reply.commentId) {
+                    <div class="comment-item reply-item">
+                      <a [routerLink]="'/profile/' + reply.authorId">
+                        <img *ngIf="reply.author?.profilePicUrl" [src]="reply.author?.profilePicUrl" class="avatar avatar-sm">
+                        <div *ngIf="!reply.author?.profilePicUrl" class="avatar avatar-sm avatar-placeholder">
+                          {{ reply.author?.username?.charAt(0) | uppercase }}
+                        </div>
+                      </a>
+                      <div class="comment-body">
+                        <div class="comment-header">
+                          <span class="comment-author">
+                            <span>{{ reply.author?.username }}</span>
+                            @if (reply.author?.isVerified) {
+                            <span class="verified-inline-badge material-icons" title="Verified Account">verified</span>
+                            }
+                          </span>
+                          <span class="comment-time">{{ formatDate(reply.createdAt) }}</span>
+                        </div>
+                        <div class="comment-text">{{ reply.content }}</div>
+                        <div class="comment-actions">
+                          <button
+                            class="btn-ghost btn-sm comment-action"
+                            [class.active]="isCommentLiked(reply)"
+                            (click)="toggleCommentLike(reply, comment.commentId)">
+                            <span class="material-icons">{{ isCommentLiked(reply) ? 'favorite' : 'favorite_border' }}</span>
+                            <span>Like</span>
+                            <span class="comment-action-count">{{ reply.likesCount || 0 }}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+        @if (comments().length === 0) {
+          <p class="text-muted" style="text-align: center; margin-top: 24px;">No comments yet. Be the first!</p>
+        }
+      </div>
+    </div>
+  }
+</div>
+
+<div *ngIf="loading()" class="loading-state">
+  <span class="material-icons rotating" style="font-size: 48px; color: var(--accent-primary);">autorenew</span>
+</div>

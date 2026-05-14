@@ -1,0 +1,150 @@
+<div class="explore-container">
+  <div class="search-header">
+    @if (searchQuery()) {
+      <div class="search-tabs">
+        <button class="tab-item" [class.active]="activeTab() === 'POSTS'" (click)="setTab('POSTS')">
+          Posts
+          @if (postResultCount() > 0) {
+            <span class="tab-count">{{ postResultCount() }}</span>
+          }
+        </button>
+        <button class="tab-item" [class.active]="activeTab() === 'USERS'" (click)="setTab('USERS')">
+          Users
+          @if (userResultCount() > 0) {
+            <span class="tab-count">{{ userResultCount() }}</span>
+          }
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="explore-content">
+    @if (loading()) {
+      <div class="loading-state">
+        <span class="material-icons rotating" style="font-size: 48px; color: var(--accent-primary);">autorenew</span>
+      </div>
+    } @else {
+      <!-- Trending Default State -->
+      @if (!searchQuery()) {
+        <h2 class="section-title">Trending Hashtags</h2>
+        <div class="trending-grid">
+          @for (tag of trendingHashtags(); track tag.tag) {
+            <a [routerLink]="['/explore']" [queryParams]="{q: tag.tag}" class="card trending-card animate-item">
+              <span class="trending-hash">#</span>
+              <span class="trending-name">{{ tag.tag }}</span>
+              <span class="trending-count">{{ tag.postCount | number }} posts</span>
+            </a>
+          }
+        </div>
+
+        <h2 class="section-title recent-posts-title">Fresh from the universe</h2>
+        <div class="results-list">
+          @for (post of recentPosts(); track post.postId) {
+            <div class="card post-card animate-item">
+              <div class="post-header">
+                <a [routerLink]="'/profile/' + post.authorId" class="post-author">
+                  <img *ngIf="post.author?.profilePicUrl" [src]="post.author?.profilePicUrl" class="avatar avatar-md">
+                  <div *ngIf="!post.author?.profilePicUrl" class="avatar avatar-md avatar-placeholder">
+                    {{ (post.author?.username || 'u').charAt(0) | uppercase }}
+                  </div>
+                  <div class="author-info">
+                    <span class="author-name">
+                      <span>{{ post.author?.fullName || post.author?.username }}</span>
+                      @if (post.author?.isVerified) {
+                      <span class="verified-inline-badge material-icons" title="Verified Account">verified</span>
+                      }
+                    </span>
+                    <span class="author-handle">@{{ post.author?.username }}</span>
+                  </div>
+                </a>
+              </div>
+              <a [routerLink]="'/post/' + post.postId" class="post-content post-link"><p>{{ post.content }}</p></a>
+              @if (post.mediaUrls.length > 0) {
+                <a [routerLink]="'/post/' + post.postId" class="post-media">
+                  @if (isVideoPost(post)) {
+                    <video [src]="post.mediaUrls[0]" controls playsinline preload="metadata"></video>
+                  } @else {
+                    <img [src]="post.mediaUrls[0]">
+                  }
+                </a>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Search Results: POSTS -->
+      @if (searchQuery() && activeTab() === 'POSTS') {
+        <div class="results-list">
+          @for (post of posts(); track post.postId) {
+            <div class="card post-card animate-item">
+              <div class="post-header">
+                <a [routerLink]="'/profile/' + post.authorId" class="post-author">
+                  <img *ngIf="post.author?.profilePicUrl" [src]="post.author?.profilePicUrl" class="avatar avatar-md">
+                  <div *ngIf="!post.author?.profilePicUrl" class="avatar avatar-md avatar-placeholder">
+                    {{ (post.author?.username || 'u').charAt(0) | uppercase }}
+                  </div>
+                  <div class="author-info">
+                    <span class="author-name">
+                      <span>{{ post.author?.fullName || post.author?.username }}</span>
+                      @if (post.author?.isVerified) {
+                      <span class="verified-inline-badge material-icons" title="Verified Account">verified</span>
+                      }
+                    </span>
+                    <span class="author-handle">@{{ post.author?.username }}</span>
+                  </div>
+                </a>
+              </div>
+              <a [routerLink]="'/post/' + post.postId" class="post-content post-link"><p>{{ post.content }}</p></a>
+              @if (post.mediaUrls.length > 0) {
+                <a [routerLink]="'/post/' + post.postId" class="post-media">
+                  @if (isVideoPost(post)) {
+                    <video [src]="post.mediaUrls[0]" controls playsinline preload="metadata"></video>
+                  } @else {
+                    <img [src]="post.mediaUrls[0]">
+                  }
+                </a>
+              }
+            </div>
+          }
+          @if (posts().length === 0) {
+            <div class="empty-state animate-item">
+              <span class="material-icons">search_off</span>
+              <p>No posts found for "{{ searchQuery() }}"</p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Search Results: USERS -->
+      @if (searchQuery() && activeTab() === 'USERS') {
+        <div class="results-grid">
+          @for (user of users(); track user.userId) {
+            <a [routerLink]="'/profile/' + user.userId" class="card user-card animate-item">
+              <img *ngIf="user.profilePicUrl" [src]="user.profilePicUrl" class="avatar avatar-lg">
+              <div *ngIf="!user.profilePicUrl" class="avatar avatar-lg avatar-placeholder">
+                {{ user.username.charAt(0) | uppercase }}
+              </div>
+              <div class="user-details">
+                <span class="user-name">
+                  <span>{{ user.fullName || user.username }}</span>
+                  @if (user.isVerified) {
+                  <span class="verified-inline-badge material-icons" title="Verified Account">verified</span>
+                  }
+                </span>
+                <span class="user-handle">@{{ user.username }}</span>
+                <span class="user-bio" *ngIf="user.bio">{{ user.bio }}</span>
+              </div>
+            </a>
+          }
+          @if (users().length === 0) {
+            <div class="empty-state animate-item">
+              <span class="material-icons">person_off</span>
+              <p>No users found for "{{ searchQuery() }}"</p>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>

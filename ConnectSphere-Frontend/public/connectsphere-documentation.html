@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ConnectSphere Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --navy: #0f1f38;
+    --navy-soft: #173156;
+    --sky: #2f80ed;
+    --cyan: #54d2ff;
+    --mint: #c8fff4;
+    --sand: #f7f4ec;
+    --paper: #fcfcfd;
+    --card: #ffffff;
+    --text: #172033;
+    --muted: #667085;
+    --border: #d8e1ec;
+    --glow: rgba(84, 210, 255, 0.25);
+    --sidebar-w: 292px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(circle at top right, rgba(84, 210, 255, 0.12), transparent 24%),
+      linear-gradient(180deg, #f5fbff 0%, var(--sand) 100%);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background:
+      linear-gradient(180deg, rgba(15, 31, 56, 0.98), rgba(23, 49, 86, 0.98));
+    color: #d9e7ff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 12px 0 40px rgba(15, 31, 56, 0.18);
+  }
+
+  .sidebar-brand {
+    padding: 26px 22px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .sidebar-brand h1 {
+    font-size: 1.25rem;
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+  }
+
+  .sidebar-brand h1 span { color: var(--cyan); }
+
+  .sidebar-brand p {
+    margin-top: 8px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: rgba(217, 231, 255, 0.72);
+  }
+
+  .sidebar-section {
+    padding: 18px 18px 8px;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    color: rgba(217, 231, 255, 0.46);
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 10px 18px 10px 22px;
+    color: #c7d8f8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-left: 3px solid transparent;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  }
+
+  .sidebar a:hover,
+  .sidebar a.active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border-left-color: var(--cyan);
+  }
+
+  .main {
+    margin-left: var(--sidebar-w);
+    width: calc(100% - var(--sidebar-w));
+  }
+
+  .hero {
+    padding: 54px 52px 44px;
+    background:
+      radial-gradient(circle at top left, rgba(84, 210, 255, 0.24), transparent 30%),
+      linear-gradient(135deg, var(--navy) 0%, #153767 55%, #1f5ea4 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -80px -120px auto;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(84, 210, 255, 0.34), transparent 68%);
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .hero h2 {
+    margin-top: 18px;
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    line-height: 1.03;
+    letter-spacing: -0.05em;
+  }
+
+  .hero p {
+    margin-top: 14px;
+    max-width: 920px;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .badge-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+
+  .badge {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.09);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .content {
+    padding: 38px 52px 80px;
+  }
+
+  .section {
+    margin-bottom: 62px;
+    scroll-margin-top: 28px;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    font-size: 1.7rem;
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--navy);
+  }
+
+  .section-title .num {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sky), #66d3ff);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 800;
+    box-shadow: 0 10px 24px var(--glow);
+  }
+
+  .card,
+  .info-card,
+  .diagram-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(17, 34, 68, 0.06);
+  }
+
+  .card {
+    padding: 24px;
+    margin-bottom: 18px;
+  }
+
+  .subsection {
+    margin-bottom: 34px;
+  }
+
+  .subsection h3 {
+    margin-bottom: 12px;
+    font-size: 1.08rem;
+    color: var(--navy-soft);
+    border-left: 4px solid var(--sky);
+    padding-left: 12px;
+  }
+
+  .lead {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #31415d;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .info-card {
+    padding: 18px 20px;
+  }
+
+  .label {
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .value {
+    margin-top: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .desc {
+    margin-top: 6px;
+    font-size: 0.86rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: white;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  th {
+    background: linear-gradient(135deg, var(--navy-soft), #285083);
+    color: white;
+    text-align: left;
+    padding: 12px 14px;
+    font-weight: 700;
+  }
+
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #e6edf6;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td {
+    background: #fbfdff;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  code {
+    font-family: Consolas, Monaco, monospace;
+    font-size: 0.84rem;
+    background: #eef4fc;
+    color: #164a8a;
+    border-radius: 6px;
+    padding: 2px 6px;
+  }
+
+  .diagram-box {
+    padding: 22px;
+    margin-bottom: 18px;
+    overflow-x: auto;
+  }
+
+  .diagram-title {
+    margin-bottom: 14px;
+    font-size: 0.76rem;
+    color: var(--muted);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .mermaid {
+    min-width: 680px;
+  }
+
+  .list {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .list-item {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    border: 1px solid var(--border);
+    color: #31415d;
+    line-height: 1.7;
+  }
+
+  .flow-steps { counter-reset: step; }
+
+  .flow-step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+
+  .flow-step::before {
+    counter-increment: step;
+    content: counter(step);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--sky), var(--cyan));
+    color: white;
+    box-shadow: 0 8px 20px var(--glow);
+  }
+
+  .flow-step-text {
+    color: #31415d;
+    line-height: 1.75;
+    font-size: 0.95rem;
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .pill {
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+  }
+
+  .blue { background: #eaf3ff; color: #1450a3; border-color: #bdd7ff; }
+  .cyan { background: #e7fbff; color: #0b6c88; border-color: #adefff; }
+  .green { background: #e9fff4; color: #16674e; border-color: #b7f2da; }
+  .amber { background: #fff4d7; color: #8e5d00; border-color: #f5d489; }
+  .rose { background: #ffe8ee; color: #a33f5c; border-color: #ffc2d2; }
+  .slate { background: #eff3f8; color: #405063; border-color: #d8e1ec; }
+
+  .footer-note {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  @media (max-width: 980px) {
+    body { display: block; }
+    .sidebar {
+      position: relative;
+      width: 100%;
+      min-width: 100%;
+      height: auto;
+    }
+    .main {
+      margin-left: 0;
+      width: 100%;
+    }
+    .hero,
+    .content {
+      padding-left: 22px;
+      padding-right: 22px;
+    }
+    .mermaid {
+      min-width: 560px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero {
+      padding-top: 34px;
+      padding-bottom: 30px;
+    }
+    .content { padding-top: 26px; }
+    .section-title { font-size: 1.38rem; }
+    .mermaid { min-width: 500px; }
+  }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <h1><span>ConnectSphere</span><br />Documentation</h1>
+    <p>Social media platform architecture, flows, services, APIs, and delivery reference.</p>
+  </div>
+
+  <div class="sidebar-section">Overview</div>
+  <a href="#synopsis" class="active">Project Synopsis</a>
+  <a href="#requirements">Detailed Requirements</a>
+  <a href="#tech-stack">Technology Stack</a>
+  <a href="#services">Microservices Table</a>
+
+  <div class="sidebar-section">Design</div>
+  <a href="#architecture">System Architecture</a>
+  <a href="#erd">Entity Relationship</a>
+  <a href="#class-diagrams">Class Diagrams</a>
+  <a href="#sequence-diagrams">Sequence Diagrams</a>
+  <a href="#component-diagram">Component Diagram</a>
+  <a href="#state-diagram">State Diagram</a>
+  <a href="#frontend">Frontend Structure</a>
+  <a href="#flows">Core User Flows</a>
+  <a href="#deployment">Deployment View</a>
+
+  <div class="sidebar-section">Reference</div>
+  <a href="#apis">API Endpoints</a>
+  <a href="#storage">Database Schemas</a>
+  <a href="#security">Security and Ops</a>
+  <a href="#future">Future Enhancements</a>
+</nav>
+
+<div class="main">
+  <section class="hero">
+    <span class="eyebrow">ConnectSphere v1.0</span>
+    <h2>Community-first social networking built on Angular 21 and Spring Boot microservices.</h2>
+    <p>
+      ConnectSphere is a production-style social media platform for identity, posting, comments,
+      reactions, stories, follows, notifications, search, payment-backed verification, and admin
+      moderation. This page mirrors the presentation style of the reference document while using
+      the actual structure and runtime details discovered in the ConnectSphere codebase.
+    </p>
+    <div class="badge-row">
+      <span class="badge">Angular 21 + SSR</span>
+      <span class="badge">Spring Boot 3.4.x</span>
+      <span class="badge">API Gateway + Eureka</span>
+      <span class="badge">MySQL + Kafka</span>
+      <span class="badge">JWT + Google OAuth2</span>
+      <span class="badge">11 backend runtime pieces</span>
+    </div>
+  </section>
+
+  <div class="content">
+    <section id="synopsis" class="section">
+      <h2 class="section-title"><span class="num">1</span>Project Synopsis</h2>
+      <div class="card">
+        <p class="lead">
+          ConnectSphere delivers a modern social platform experience with a microservice backend and
+          a route-driven Angular frontend. Users can register or sign in with Google, create public
+          or restricted posts, reply in threaded discussions, react to content, publish expiring
+          stories, follow other users, receive in-app notifications, search users and hashtags,
+          and manage profile settings. Administrative users get moderation, verification, user
+          governance, and system-level monitoring capabilities.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <div class="info-card">
+          <div class="label">Application Type</div>
+          <div class="value">Distributed social media platform</div>
+          <div class="desc">SPA/SSR frontend with service-discovered Spring Boot backend modules.</div>
+        </div>
+        <div class="info-card">
+          <div class="label">Frontend Entry</div>
+          <div class="value"><code>http://localhost:4200</code></div>
+          <div class="desc">Angular 21 app with auth, feed, explore, notifications, profile, settings, and admin views.</div>
+        </div>
+        <div class="info-card">
+          <div class="label">Gateway Entry</div>
+          <div class="value"><code>http://localhost:8080</code></div>
+          <div class="desc">Single API ingress with routing, JWT validation, and CORS control.</div>
+        </div>
+        <div class="info-card">
+          <div class="label">Core Data Stores</div>
+          <div class="value">Service-owned MySQL schemas</div>
+          <div class="desc">Each domain service persists to its own dedicated MySQL database.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="requirements" class="section">
+      <h2 class="section-title"><span class="num">2</span>Detailed Requirements</h2>
+
+      <div class="subsection">
+        <h3>Functional Scope</h3>
+        <div class="list">
+          <div class="list-item"><strong>Identity and access:</strong> registration, login, forgot-password, OTP verification, reset-password, profile update, password change, account deactivation, account deletion, and Google OAuth2 callback handling.</div>
+          <div class="list-item"><strong>Content creation:</strong> users can create posts with visibility levels <code>PUBLIC</code>, <code>FOLLOWERS</code>, and <code>PRIVATE</code>, then edit, delete, and search them.</div>
+          <div class="list-item"><strong>Conversation layer:</strong> comments support post-level discussions, reply threads, per-comment like state, like counters, and post comment count synchronization.</div>
+          <div class="list-item"><strong>Social graph:</strong> follow and unfollow operations, follower/following counts, mutual connections, and suggestion retrieval are provided as a dedicated service.</div>
+          <div class="list-item"><strong>Attention and discovery:</strong> stories, unread notifications, hashtag trending, post search, and user search support daily platform engagement.</div>
+          <div class="list-item"><strong>Administration:</strong> admins can view dashboard metrics, inspect users, change roles, change status, verify or deny verification, and delete user accounts.</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Non-Functional Expectations</h3>
+        <div class="pill-row">
+          <span class="pill blue">Loose service coupling</span>
+          <span class="pill cyan">Gateway-based security</span>
+          <span class="pill green">Independent schema ownership</span>
+          <span class="pill amber">Asynchronous event propagation</span>
+          <span class="pill rose">Admin observability</span>
+          <span class="pill slate">Local Docker-friendly startup</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="tech-stack" class="section">
+      <h2 class="section-title"><span class="num">3</span>Technology Stack</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Layer</th>
+              <th>Technology</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Frontend</td>
+              <td>Angular 21, TypeScript, Angular Router, Angular SSR</td>
+              <td>SPA/SSR user experience with route-guarded views and lazy-loaded screens.</td>
+            </tr>
+            <tr>
+              <td>State / UI</td>
+              <td>Angular Signals, RxJS, GSAP</td>
+              <td>Reactive state, async service orchestration, and interface animation.</td>
+            </tr>
+            <tr>
+              <td>Backend</td>
+              <td>Java 17+, Spring Boot 3.4.x, Spring Cloud</td>
+              <td>Microservice runtime, routing, dependency injection, validation, and REST APIs.</td>
+            </tr>
+            <tr>
+              <td>Security</td>
+              <td>Spring Security, JWT, Google OAuth2, BCrypt</td>
+              <td>Authentication, token-based authorization, and external sign-in.</td>
+            </tr>
+            <tr>
+              <td>Messaging</td>
+              <td>Apache Kafka</td>
+              <td>Domain event fan-out for notifications, search indexing, and decoupled updates.</td>
+            </tr>
+            <tr>
+              <td>Persistence</td>
+              <td>MySQL 8, Spring Data JPA, Hibernate</td>
+              <td>Service-specific schema persistence for auth, posts, comments, likes, follows, media, and search.</td>
+            </tr>
+            <tr>
+              <td>Discovery / Ops</td>
+              <td>Netflix Eureka, Spring Boot Admin, Actuator</td>
+              <td>Service discovery, health visibility, and runtime monitoring.</td>
+            </tr>
+            <tr>
+              <td>Payments</td>
+              <td>Razorpay integration</td>
+              <td>Verification purchase flow and payment status checks.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="services" class="section">
+      <h2 class="section-title"><span class="num">4</span>Microservices Table</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Port</th>
+              <th>Main Responsibility</th>
+              <th>Primary Routes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Service Registry</td>
+              <td>8761</td>
+              <td>Eureka discovery server</td>
+              <td><code>/eureka</code></td>
+            </tr>
+            <tr>
+              <td>API Gateway</td>
+              <td>8080</td>
+              <td>Unified entry point, JWT validation, service routing</td>
+              <td><code>/api/v1/**</code></td>
+            </tr>
+            <tr>
+              <td>Auth User Service</td>
+              <td>8081</td>
+              <td>Accounts, profiles, auth, admin, payment verification</td>
+              <td><code>/api/v1/auth</code>, <code>/api/v1/users</code>, <code>/api/v1/payments</code></td>
+            </tr>
+            <tr>
+              <td>Post Service</td>
+              <td>8082</td>
+              <td>Post CRUD, feeds, search, counters</td>
+              <td><code>/api/v1/posts</code></td>
+            </tr>
+            <tr>
+              <td>Comment Service</td>
+              <td>8083</td>
+              <td>Threaded comments and replies</td>
+              <td><code>/api/v1/comments</code></td>
+            </tr>
+            <tr>
+              <td>Like Service</td>
+              <td>8084</td>
+              <td>Reaction state and counts for posts/comments</td>
+              <td><code>/api/v1/likes</code></td>
+            </tr>
+            <tr>
+              <td>Follow Service</td>
+              <td>8085</td>
+              <td>Follower graph, mutuals, suggestions</td>
+              <td><code>/api/v1/follows</code></td>
+            </tr>
+            <tr>
+              <td>Notification Service</td>
+              <td>8086</td>
+              <td>Unread counts, read state, broadcast, internal notifications</td>
+              <td><code>/api/v1/notifications</code></td>
+            </tr>
+            <tr>
+              <td>Media Service</td>
+              <td>8087</td>
+              <td>Post media and 24-hour stories</td>
+              <td><code>/api/v1/media</code>, <code>/api/v1/stories</code></td>
+            </tr>
+            <tr>
+              <td>Search Service</td>
+              <td>8088</td>
+              <td>Hashtag trends, search indexing</td>
+              <td><code>/api/v1/hashtags</code>, <code>/api/v1/search</code></td>
+            </tr>
+            <tr>
+              <td>Admin Monitor</td>
+              <td>9090</td>
+              <td>Spring Boot Admin health dashboard</td>
+              <td><code>/admin-monitor</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="architecture" class="section">
+      <h2 class="section-title"><span class="num">5</span>System Architecture</h2>
+
+      <div class="diagram-box">
+        <div class="diagram-title">Runtime Topology</div>
+        <div class="mermaid">
+flowchart LR
+  UI["Angular 21 Frontend<br/>localhost:4200"] --> GW["API Gateway<br/>:8080"]
+  GW --> EU["Eureka Registry<br/>:8761"]
+  GW --> AUTH["Auth User Service<br/>:8081"]
+  GW --> POST["Post Service<br/>:8082"]
+  GW --> COMMENT["Comment Service<br/>:8083"]
+  GW --> LIKE["Like Service<br/>:8084"]
+  GW --> FOLLOW["Follow Service<br/>:8085"]
+  GW --> NOTIFY["Notification Service<br/>:8086"]
+  GW --> MEDIA["Media Service<br/>:8087"]
+  GW --> SEARCH["Search Service<br/>:8088"]
+  GW --> ADMIN["Admin Monitor<br/>:9090/admin-monitor"]
+
+  AUTH --> DBAUTH[("connectsphere_auth")]
+  POST --> DBPOST[("connectsphere_posts")]
+  COMMENT --> DBCOMMENT[("connectsphere_comments")]
+  LIKE --> DBLIKE[("connectsphere_likes")]
+  FOLLOW --> DBFOLLOW[("connectsphere_follows")]
+  NOTIFY --> DBNOTIFY[("connectsphere_notifications")]
+  MEDIA --> DBMEDIA[("connectsphere_media")]
+  SEARCH --> DBSEARCH[("connectsphere_search")]
+
+  POST -. publishes .-> KAFKA["Kafka :9092"]
+  AUTH -. emits payment/user events .-> KAFKA
+  KAFKA -. consumes .-> NOTIFY
+  KAFKA -. consumes .-> SEARCH
+        </div>
+      </div>
+
+      <div class="diagram-box">
+        <div class="diagram-title">Gateway Routing Domains</div>
+        <div class="mermaid">
+flowchart TB
+  G["Gateway Route Map"] --> A["/api/v1/auth/** + /api/v1/users/** + /oauth2/**"]
+  G --> B["/api/v1/posts/**"]
+  G --> C["/api/v1/comments/**"]
+  G --> D["/api/v1/likes/**"]
+  G --> E["/api/v1/follows/**"]
+  G --> F["/api/v1/notifications/**"]
+  G --> H["/api/v1/media/** + /api/v1/stories/**"]
+  G --> I["/api/v1/search/** + /api/v1/hashtags/**"]
+  G --> J["/api/v1/payments/**"]
+        </div>
+      </div>
+    </section>
+
+    <section id="erd" class="section">
+      <h2 class="section-title"><span class="num">6</span>Entity Relationship Diagram</h2>
+      <div class="diagram-box">
+        <div class="diagram-title">High-Level Entity Relationships</div>
+        <div class="mermaid">
+erDiagram
+  USER ||--o{ POST : creates
+  USER ||--o{ COMMENT : writes
+  USER ||--o{ STORY : publishes
+  USER ||--o{ NOTIFICATION : receives
+  USER ||--o{ FOLLOW_RELATION : follows
+  POST ||--o{ COMMENT : contains
+  POST ||--o{ MEDIA : attaches
+  POST ||--o{ LIKE : receives
+  COMMENT ||--o{ LIKE : receives
+  COMMENT ||--o{ COMMENT : replies_to
+  POST ||--o{ HASHTAG_INDEX : indexed_by
+
+  USER {
+    string userId
+    string email
+    string role
+    string status
+  }
+  POST {
+    string postId
+    string authorId
+    string visibility
+    int likesCount
+    int commentsCount
+  }
+  COMMENT {
+    string commentId
+    string postId
+    string authorId
+    string parentCommentId
+  }
+  STORY {
+    string storyId
+    string userId
+    datetime expiresAt
+  }
+  LIKE {
+    string likeId
+    string targetId
+    string targetType
+    string reactionType
+  }
+        </div>
+      </div>
+
+      <div class="card-grid">
+        <div class="info-card">
+          <div class="label">User Domain</div>
+          <div class="value">Identity, profile, role, status, verification</div>
+          <div class="desc">Anchors authentication, authorization, profile lookups, and admin workflows.</div>
+        </div>
+        <div class="info-card">
+          <div class="label">Content Domain</div>
+          <div class="value">Posts, media, comments, stories</div>
+          <div class="desc">Separates durable post content from short-lived story interactions and media metadata.</div>
+        </div>
+        <div class="info-card">
+          <div class="label">Engagement Domain</div>
+          <div class="value">Likes, follows, notifications</div>
+          <div class="desc">Captures interactions that fan out across profiles, feeds, and alert surfaces.</div>
+        </div>
+        <div class="info-card">
+          <div class="label">Discovery Domain</div>
+          <div class="value">Search and hashtag indexing</div>
+          <div class="desc">Supports trending, query-based retrieval, and cross-post discoverability.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="class-diagrams" class="section">
+      <h2 class="section-title"><span class="num">7</span>Class Diagrams</h2>
+      <div class="diagram-box">
+        <div class="diagram-title">Frontend Service Layer</div>
+        <div class="mermaid">
+classDiagram
+  class AuthService {
+    +login()
+    +register()
+    +forgotPassword()
+    +resetPassword()
+    +handleOAuth2Callback()
+    +currentUser()
+  }
+
+  class UserService {
+    +getUserProfile()
+    +updateProfile()
+    +searchUsers()
+  }
+
+  class PostService {
+    +getFeed()
+    +getPostById()
+    +searchPosts()
+    +createPost()
+    +updatePost()
+    +deletePost()
+  }
+
+  class CommentService {
+    +getCommentsByPost()
+    +addComment()
+    +replyToComment()
+    +deleteComment()
+  }
+
+  class LikeService {
+    +like()
+    +unlike()
+    +hasLiked()
+    +getCount()
+  }
+
+  class FollowService {
+    +followUser()
+    +unfollowUser()
+    +isFollowing()
+    +getFollowers()
+    +getFollowing()
+  }
+
+  class NotificationService {
+    +getNotifications()
+    +getUnreadCount()
+    +markAsRead()
+    +markAllAsRead()
+  }
+
+  class SearchService {
+    +searchUsers()
+    +searchPosts()
+    +getTrendingHashtags()
+  }
+
+  class StoryService {
+    +getStoriesFeed()
+    +getMyStories()
+    +createStory()
+    +viewStory()
+  }
+
+  class PaymentService {
+    +createOrder()
+    +verifyPayment()
+    +getStatus()
+    +cancel()
+  }
+
+  PostService --> AuthService : uses current user context
+  PostService --> LikeService : enriches like state
+  PostService --> CommentService : enriches comment count
+  CommentService --> LikeService : comment reactions
+  CommentService --> UserService : author hydration
+  FollowService --> UserService : profile enrichment
+  NotificationService --> UserService : actor hydration
+  SearchService --> UserService : user search
+        </div>
+      </div>
+
+      <div class="diagram-box">
+        <div class="diagram-title">Backend Domain Components</div>
+        <div class="mermaid">
+classDiagram
+  class ApiGateway
+  class AuthUserService
+  class PostService
+  class CommentService
+  class LikeService
+  class FollowService
+  class NotificationService
+  class MediaService
+  class SearchService
+  class KafkaBus
+
+  ApiGateway --> AuthUserService
+  ApiGateway --> PostService
+  ApiGateway --> CommentService
+  ApiGateway --> LikeService
+  ApiGateway --> FollowService
+  ApiGateway --> NotificationService
+  ApiGateway --> MediaService
+  ApiGateway --> SearchService
+  PostService --> KafkaBus : publishes post events
+  AuthUserService --> KafkaBus : emits account/payment events
+  KafkaBus --> NotificationService : consumes events
+  KafkaBus --> SearchService : consumes events
+  CommentService --> LikeService : reaction sync
+  FollowService --> NotificationService : follow alerts
+        </div>
+      </div>
+    </section>
+
+    <section id="sequence-diagrams" class="section">
+      <h2 class="section-title"><span class="num">8</span>Sequence Diagrams</h2>
+      <div class="subsection">
+        <h3>Authentication Sequence</h3>
+        <div class="diagram-box">
+          <div class="diagram-title">User Login Sequence</div>
+          <div class="mermaid">
+sequenceDiagram
+  participant U as User
+  participant FE as Angular Frontend
+  participant GW as API Gateway
+  participant AU as Auth User Service
+
+  U->>FE: Submit credentials
+  FE->>GW: POST /api/v1/auth/login
+  GW->>AU: Forward authenticated request
+  AU->>AU: Validate credentials + build JWT
+  AU-->>GW: Auth response + token + user summary
+  GW-->>FE: Token payload
+  FE->>FE: Persist token and current user
+  FE-->>U: Redirect to /home
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Follow and Notification Sequence</h3>
+        <div class="diagram-box">
+          <div class="diagram-title">Social Graph Interaction</div>
+          <div class="mermaid">
+sequenceDiagram
+  participant U as Current User
+  participant FE as Frontend
+  participant GW as Gateway
+  participant FO as Follow Service
+  participant NO as Notification Service
+
+  U->>FE: Click Follow
+  FE->>GW: POST /api/v1/follows?followeeId=target
+  GW->>FO: Forward request with user headers
+  FO->>FO: Persist follow relation
+  FO-->>GW: Success
+  GW-->>FE: 200 OK
+  FO-->>NO: Internal event / async side effect
+  NO->>NO: Create recipient notification
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Post Publishing Sequence</h3>
+        <div class="diagram-box">
+          <div class="diagram-title">Create Post With Downstream Updates</div>
+          <div class="mermaid">
+sequenceDiagram
+  participant U as User
+  participant FE as Frontend
+  participant GW as Gateway
+  participant PO as Post Service
+  participant KA as Kafka
+  participant SE as Search Service
+  participant NO as Notification Service
+
+  U->>FE: Publish post
+  FE->>GW: POST /api/v1/posts
+  GW->>PO: Forward request
+  PO->>PO: Store post in posts schema
+  PO-->>GW: Created post
+  GW-->>FE: Post response
+  PO-->>KA: Publish post-events
+  KA-->>SE: Consume for hashtag indexing
+  KA-->>NO: Consume for notification processing
+        </div>
+      </div>
+    </section>
+
+    <section id="component-diagram" class="section">
+      <h2 class="section-title"><span class="num">9</span>Component Diagram</h2>
+      <div class="diagram-box">
+        <div class="diagram-title">Application Components and Responsibilities</div>
+        <div class="mermaid">
+flowchart LR
+  subgraph Frontend
+    Shell["Shell Layout"]
+    AuthViews["Auth Views"]
+    FeedViews["Feed / Explore / Post Detail"]
+    SocialViews["Profile / Notifications / Settings"]
+    AdminViews["Admin Dashboard"]
+    ClientServices["Angular Core Services"]
+  end
+
+  subgraph Edge
+    Gateway["API Gateway"]
+    Registry["Eureka Registry"]
+  end
+
+  subgraph BusinessServices
+    AuthSvc["Auth User Service"]
+    PostSvc["Post Service"]
+    CommentSvc["Comment Service"]
+    LikeSvc["Like Service"]
+    FollowSvc["Follow Service"]
+    NotificationSvc["Notification Service"]
+    MediaSvc["Media Service"]
+    SearchSvc["Search Service"]
+  end
+
+  subgraph Platform
+    Kafka["Kafka"]
+    MySQL["MySQL Schemas"]
+    AdminMonitor["Spring Boot Admin"]
+  end
+
+  AuthViews --> ClientServices
+  FeedViews --> ClientServices
+  SocialViews --> ClientServices
+  AdminViews --> ClientServices
+  Shell --> Gateway
+  ClientServices --> Gateway
+  Gateway --> Registry
+  Gateway --> AuthSvc
+  Gateway --> PostSvc
+  Gateway --> CommentSvc
+  Gateway --> LikeSvc
+  Gateway --> FollowSvc
+  Gateway --> NotificationSvc
+  Gateway --> MediaSvc
+  Gateway --> SearchSvc
+  PostSvc --> Kafka
+  AuthSvc --> Kafka
+  Kafka --> NotificationSvc
+  Kafka --> SearchSvc
+  AuthSvc --> MySQL
+  PostSvc --> MySQL
+  CommentSvc --> MySQL
+  LikeSvc --> MySQL
+  FollowSvc --> MySQL
+  NotificationSvc --> MySQL
+  MediaSvc --> MySQL
+  SearchSvc --> MySQL
+  Gateway --> AdminMonitor
+        </div>
+      </div>
+    </section>
+
+    <section id="state-diagram" class="section">
+      <h2 class="section-title"><span class="num">10</span>State Diagram</h2>
+      <div class="diagram-box">
+        <div class="diagram-title">Post Lifecycle</div>
+        <div class="mermaid">
+stateDiagram-v2
+  [*] --> Draft
+  Draft --> Published : create post
+  Published --> Edited : update content
+  Edited --> Published : save changes
+  Published --> VisibilityRestricted : set FOLLOWERS/PRIVATE
+  VisibilityRestricted --> Published : set PUBLIC
+  Published --> Reported : moderation flag
+  Reported --> Published : cleared
+  Reported --> Removed : admin delete
+  Published --> Removed : user delete
+  Edited --> Removed : delete post
+  VisibilityRestricted --> Removed : delete post
+  Removed --> [*]
+        </div>
+      </div>
+
+      <div class="diagram-box">
+        <div class="diagram-title">User Account State</div>
+        <div class="mermaid">
+stateDiagram-v2
+  [*] --> Registered
+  Registered --> Active : email/login success
+  Active --> Verified : payment verification approved
+  Active --> Suspended : admin status change
+  Verified --> Suspended : admin status change
+  Suspended --> Active : restore account
+  Active --> Deactivated : user deactivates account
+  Deactivated --> Active : reactivation flow
+  Active --> Deleted : delete account
+  Suspended --> Deleted : admin delete
+  Deleted --> [*]
+        </div>
+      </div>
+    </section>
+
+    <section id="frontend" class="section">
+      <h2 class="section-title"><span class="num">11</span>Frontend Structure</h2>
+
+      <div class="subsection">
+        <h3>Route Map</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Route</th>
+                <th>Guard</th>
+                <th>Screen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>/auth/login</code></td><td>Guest</td><td>LoginComponent</td></tr>
+              <tr><td><code>/auth/register</code></td><td>Guest</td><td>RegisterComponent</td></tr>
+              <tr><td><code>/auth/forgot-password</code></td><td>Guest</td><td>ForgotPasswordComponent</td></tr>
+              <tr><td><code>/auth/verify-otp</code></td><td>Guest</td><td>VerifyOtpComponent</td></tr>
+              <tr><td><code>/auth/reset-password</code></td><td>Guest</td><td>ResetPasswordComponent</td></tr>
+              <tr><td><code>/auth/oauth2/callback</code></td><td>Open</td><td>OAuth2CallbackComponent</td></tr>
+              <tr><td><code>/home</code></td><td>Authenticated</td><td>FeedComponent</td></tr>
+              <tr><td><code>/explore</code></td><td>Authenticated</td><td>ExploreComponent</td></tr>
+              <tr><td><code>/notifications</code></td><td>Authenticated</td><td>NotificationsComponent</td></tr>
+              <tr><td><code>/profile/:id</code></td><td>Authenticated</td><td>ProfileComponent</td></tr>
+              <tr><td><code>/settings</code></td><td>Authenticated</td><td>SettingsComponent</td></tr>
+              <tr><td><code>/post/:id</code></td><td>Authenticated</td><td>PostDetailComponent</td></tr>
+              <tr><td><code>/admin</code></td><td>Admin</td><td>AdminDashboardComponent</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Frontend Feature Groups</h3>
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="label">Core</div>
+            <div class="value">Models, guards, services</div>
+            <div class="desc">Typed client contracts and HTTP services for auth, posts, comments, likes, follows, search, stories, notifications, payments, and admin.</div>
+          </div>
+          <div class="info-card">
+            <div class="label">Layout</div>
+            <div class="value">Shell, sidebar, topbar</div>
+            <div class="desc">Shared navigation chrome for authenticated experiences.</div>
+          </div>
+          <div class="info-card">
+            <div class="label">Feature Views</div>
+            <div class="value">Feed, explore, profile, notifications, settings</div>
+            <div class="desc">Standalone components lazily loaded through Angular route definitions.</div>
+          </div>
+          <div class="info-card">
+            <div class="label">Auth UX</div>
+            <div class="value">Guest-first entry flow</div>
+            <div class="desc">Dedicated screens for login, register, forgot/reset password, OTP, and OAuth callback completion.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="flows" class="section">
+      <h2 class="section-title"><span class="num">12</span>Core User Flows</h2>
+
+      <div class="subsection">
+        <h3>Post Engagement Flow</h3>
+        <div class="flow-steps card">
+          <div class="flow-step">
+            <div class="flow-step-text"><strong>Create:</strong> the feed or composer submits post content through <code>/api/v1/posts</code>, and the post service stores the content in the posts schema.</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-text"><strong>Attach media or story content:</strong> media-related payloads are handled through the media service so post assets and stories remain isolated from the main post service.</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-text"><strong>React and comment:</strong> likes go through the like service and comment threads go through the comment service, while counters are synchronized back to the post service.</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-text"><strong>Notify and index:</strong> Kafka-backed downstream consumers can transform activity into notifications and searchable hashtag metadata.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Story and Discovery Flow</h3>
+        <div class="flow-steps card">
+          <div class="flow-step">
+            <div class="flow-step-text"><strong>Story publish:</strong> the client sends story payloads to <code>/api/v1/stories</code>, and the media service stores story metadata with an expiring lifecycle.</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-text"><strong>Story feed retrieval:</strong> the frontend requests <code>/api/v1/stories/feed</code> and hydrates story cards for the user dashboard.</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-text"><strong>Search and hashtags:</strong> search screens query users, posts, and trending hashtags through dedicated search endpoints.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="deployment" class="section">
+      <h2 class="section-title"><span class="num">13</span>Deployment View</h2>
+      <div class="diagram-box">
+        <div class="diagram-title">Local Development / Containerized Layout</div>
+        <div class="mermaid">
+flowchart TB
+  subgraph Client
+    Browser["Browser"]
+  end
+
+  subgraph AppTier
+    Frontend["Angular Frontend :4200"]
+    Gateway["API Gateway :8080"]
+    Registry["Eureka :8761"]
+    AdminServer["Spring Boot Admin :9090"]
+  end
+
+  subgraph DomainServices
+    Auth["Auth :8081"]
+    Post["Post :8082"]
+    Comment["Comment :8083"]
+    Like["Like :8084"]
+    Follow["Follow :8085"]
+    Notify["Notification :8086"]
+    Media["Media :8087"]
+    Search["Search :8088"]
+  end
+
+  subgraph DataInfra
+    MySQL["MySQL 8"]
+    Kafka["Kafka :9092"]
+  end
+
+  Browser --> Frontend
+  Frontend --> Gateway
+  Gateway --> Registry
+  Gateway --> Auth
+  Gateway --> Post
+  Gateway --> Comment
+  Gateway --> Like
+  Gateway --> Follow
+  Gateway --> Notify
+  Gateway --> Media
+  Gateway --> Search
+  Gateway --> AdminServer
+  Auth --> MySQL
+  Post --> MySQL
+  Comment --> MySQL
+  Like --> MySQL
+  Follow --> MySQL
+  Notify --> MySQL
+  Media --> MySQL
+  Search --> MySQL
+  Post --> Kafka
+  Auth --> Kafka
+  Kafka --> Notify
+  Kafka --> Search
+        </div>
+      </div>
+      <p class="footer-note">The repository already includes Docker Compose definitions and an Nginx frontend container path for full-stack local startup.</p>
+    </section>
+
+    <section id="apis" class="section">
+      <h2 class="section-title"><span class="num">14</span>API Endpoints</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th>Representative Endpoints</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Auth</td>
+              <td><code>POST /api/v1/auth/register</code>, <code>POST /api/v1/auth/login</code>, <code>POST /api/v1/auth/forgot-password</code>, <code>POST /api/v1/auth/reset-password</code>, <code>GET /api/v1/auth/me</code>, <code>PUT /api/v1/auth/profile</code>, <code>PUT /api/v1/auth/password</code></td>
+              <td>Identity, password lifecycle, current user, profile maintenance.</td>
+            </tr>
+            <tr>
+              <td>Users</td>
+              <td><code>GET /api/v1/users/{userId}/profile</code>, <code>GET /api/v1/users/search</code></td>
+              <td>Public profile lookup and user discovery.</td>
+            </tr>
+            <tr>
+              <td>Admin</td>
+              <td><code>GET /api/v1/auth/admin/dashboard</code>, <code>GET /api/v1/auth/admin/users</code>, <code>PATCH /api/v1/auth/admin/users/{userId}/role</code>, <code>PATCH /api/v1/auth/admin/users/{userId}/status</code>, <code>PATCH /api/v1/auth/admin/users/{userId}/verify</code></td>
+              <td>Role changes, moderation, and verification governance.</td>
+            </tr>
+            <tr>
+              <td>Posts</td>
+              <td><code>GET /api/v1/posts/public</code>, <code>GET /api/v1/posts/home</code>, <code>GET /api/v1/posts/feed</code>, <code>GET /api/v1/posts/{postId}</code>, <code>GET /api/v1/posts/search</code>, <code>PATCH /api/v1/posts/{postId}/visibility</code></td>
+              <td>Feed assembly, lookup, search, edit, delete, and counter updates.</td>
+            </tr>
+            <tr>
+              <td>Comments</td>
+              <td><code>GET /api/v1/comments/post/{postId}</code>, <code>POST /api/v1/comments/{commentId}/reply</code>, <code>GET /api/v1/comments/{commentId}/replies</code>, <code>DELETE /api/v1/comments/{commentId}</code></td>
+              <td>Nested replies and comment-level like synchronization.</td>
+            </tr>
+            <tr>
+              <td>Likes</td>
+              <td><code>GET /api/v1/likes/has-liked</code>, <code>GET /api/v1/likes/count</code>, <code>GET /api/v1/likes/summary</code></td>
+              <td>Polymorphic reaction state for both post and comment targets.</td>
+            </tr>
+            <tr>
+              <td>Follows</td>
+              <td><code>POST /api/v1/follows</code>, <code>DELETE /api/v1/follows</code>, <code>GET /api/v1/follows/is-following</code>, <code>GET /api/v1/follows/{userId}/followers</code>, <code>GET /api/v1/follows/suggestions</code></td>
+              <td>Relationship graph operations and recommendation helpers.</td>
+            </tr>
+            <tr>
+              <td>Notifications</td>
+              <td><code>GET /api/v1/notifications</code>, <code>GET /api/v1/notifications/unread-count</code>, <code>PATCH /api/v1/notifications/{id}/read</code>, <code>PATCH /api/v1/notifications/read-all</code>, <code>POST /api/v1/notifications/broadcast</code></td>
+              <td>User-facing alerts plus admin/system broadcast paths.</td>
+            </tr>
+            <tr>
+              <td>Media and Stories</td>
+              <td><code>POST /api/v1/media</code>, <code>GET /api/v1/media/post/{postId}</code>, <code>POST /api/v1/stories</code>, <code>GET /api/v1/stories/feed</code>, <code>POST /api/v1/stories/{storyId}/view</code></td>
+              <td>Post attachments and expiring story experiences.</td>
+            </tr>
+            <tr>
+              <td>Search</td>
+              <td><code>GET /api/v1/hashtags/trending</code>, <code>GET /api/v1/hashtags/search</code>, <code>GET /api/v1/hashtags/{tag}/posts</code>, <code>POST /api/v1/search/index</code></td>
+              <td>Hashtag discovery and indexing hooks.</td>
+            </tr>
+            <tr>
+              <td>Payments</td>
+              <td><code>POST /api/v1/payments/create-order</code>, <code>POST /api/v1/payments/verify</code>, <code>GET /api/v1/payments/my-status</code>, <code>POST /api/v1/payments/cancel</code></td>
+              <td>Verification purchase workflow backed by Razorpay.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="storage" class="section">
+      <h2 class="section-title"><span class="num">15</span>Database Schemas</h2>
+      <div class="card-grid">
+        <div class="info-card"><div class="label">Auth</div><div class="value"><code>connectsphere_auth</code></div><div class="desc">Users, credentials, profile data, admin flags, payment verification state.</div></div>
+        <div class="info-card"><div class="label">Posts</div><div class="value"><code>connectsphere_posts</code></div><div class="desc">Posts, visibility, engagement counters, author references.</div></div>
+        <div class="info-card"><div class="label">Comments</div><div class="value"><code>connectsphere_comments</code></div><div class="desc">Comment trees, parent-child reply relationships, content metadata.</div></div>
+        <div class="info-card"><div class="label">Likes</div><div class="value"><code>connectsphere_likes</code></div><div class="desc">Reaction rows keyed by target identifier and target type.</div></div>
+        <div class="info-card"><div class="label">Follows</div><div class="value"><code>connectsphere_follows</code></div><div class="desc">Follower-followee relationships and mutual lookup support.</div></div>
+        <div class="info-card"><div class="label">Notifications</div><div class="value"><code>connectsphere_notifications</code></div><div class="desc">Unread/read state, actors, notification types, and timestamps.</div></div>
+        <div class="info-card"><div class="label">Media</div><div class="value"><code>connectsphere_media</code></div><div class="desc">Post asset metadata plus story lifecycle and view state.</div></div>
+        <div class="info-card"><div class="label">Search</div><div class="value"><code>connectsphere_search</code></div><div class="desc">Hashtag indexing and trend-tracking support tables.</div></div>
+      </div>
+    </section>
+
+    <section id="security" class="section">
+      <h2 class="section-title"><span class="num">16</span>Security and Ops</h2>
+      <div class="list">
+        <div class="list-item"><strong>JWT-based access:</strong> the gateway validates tokens and forwards trusted identity context to downstream services.</div>
+        <div class="list-item"><strong>Role-sensitive routes:</strong> the Angular client uses <code>authGuard</code>, <code>guestGuard</code>, and <code>adminGuard</code> to separate guest, authenticated, and admin experiences.</div>
+        <div class="list-item"><strong>OAuth2 support:</strong> Google sign-in is configured in the auth service and returns users through the gateway callback flow.</div>
+        <div class="list-item"><strong>Operational visibility:</strong> Actuator endpoints are exposed across services, Eureka tracks registrations, and Spring Boot Admin provides a centralized runtime view.</div>
+        <div class="list-item"><strong>CORS and environment configuration:</strong> allowed origins include local frontend hosts, while secrets such as JWT, Google OAuth, mail, and Razorpay values can be externalized with environment variables.</div>
+      </div>
+    </section>
+
+    <section id="future" class="section">
+      <h2 class="section-title"><span class="num">17</span>Future Enhancements</h2>
+      <div class="list">
+        <div class="list-item">Add richer real-time delivery for notifications, typing indicators, and live feed refresh instead of relying only on request-response refresh patterns.</div>
+        <div class="list-item">Introduce object storage and CDN-backed media delivery so post media and stories scale independently from the relational metadata services.</div>
+        <div class="list-item">Formalize an API documentation portal by aggregating Swagger/OpenAPI documents from all services behind the gateway.</div>
+        <div class="list-item">Expand moderation with report queues, content review workflows, and audit trails connected to admin actions.</div>
+        <div class="list-item">Add automated expiry cleanup, search reindex tools, and observability dashboards for production-readiness.</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "neutral",
+    securityLevel: "loose",
+    flowchart: { curve: "basis" }
+  });
+
+  const links = Array.from(document.querySelectorAll(".sidebar a"));
+  const sections = links
+    .map(link => document.querySelector(link.getAttribute("href")))
+    .filter(Boolean);
+
+  const activateCurrentLink = () => {
+    let currentId = sections[0]?.id;
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= 160) currentId = section.id;
+    });
+    links.forEach(link => {
+      link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+    });
+  };
+
+  document.addEventListener("scroll", activateCurrentLink, { passive: true });
+  activateCurrentLink();
+</script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<div class="feed-container">
+  <div class="feed-main">
+    <section class="stories-panel card">
+      <div class="stories-toolbar">
+        <div>
+          <p class="stories-kicker">Daily orbit</p>
+          <h3 class="stories-title">Stories</h3>
+        </div>
+      </div>
+
+      <div class="stories-wrapper no-scrollbar">
+        @for (story of stories(); track story.id) {
+          <button
+            type="button"
+            class="story-item"
+            [class.viewed]="story.viewed"
+            [class.story-item-disabled]="!story.stories.length"
+            [disabled]="!story.stories.length"
+            (click)="openStory(story)">
+            <div class="story-ring">
+              <img *ngIf="story.profilePicUrl; else storyFallback" [src]="story.profilePicUrl" alt="Story" class="avatar avatar-lg">
+              <ng-template #storyFallback>
+                <div class="avatar avatar-lg avatar-placeholder">
+                  {{ story.username.charAt(0) | uppercase }}
+                </div>
+              </ng-template>
+              @if (story.isOwn) {
+                <button
+                  type="button"
+                  class="story-add-badge"
+                  aria-label="Add to your story"
+                  (click)="handleOwnStoryBadgeClick($event)">
+                  <span class="material-icons" aria-hidden="true">add</span>
+                </button>
+              }
+            </div>
+            <span class="story-username">{{ story.isOwn ? 'Your Story' : story.username }}</span>
+          </button>
+        }
+      </div>
+    </section>
+
+    @if (activeStoryGroup(); as group) {
+      <div class="story-modal-backdrop" (click)="closeStory()">
+        <div class="story-modal card" (click)="$event.stopPropagation()">
+          <button type="button" class="story-close btn btn-icon btn-ghost" (click)="closeStory()">
+            <span class="material-icons">close</span>
+          </button>
+
+          <div class="story-progress">
+            @for (storyItem of group.stories; track storyItem.id; let i = $index) {
+              <button
+                type="button"
+                class="story-progress-segment"
+                [class.story-progress-active]="i === activeStoryIndex()"
+                [class.story-progress-viewed]="storyItem.viewed || i < activeStoryIndex()"
+                [style.animation]="i === activeStoryIndex() ? 'storyProgressFill 7s linear forwards' : 'none'"
+                [attr.data-progress-token]="i === activeStoryIndex() ? storyProgressToken() : null"
+                (click)="setActiveStory(i)"></button>
+            }
+          </div>
+
+          <div class="story-modal-header">
+            <div class="story-author">
+              <img *ngIf="group.profilePicUrl; else activeStoryFallback" [src]="group.profilePicUrl" class="avatar avatar-md">
+              <ng-template #activeStoryFallback>
+                <div class="avatar avatar-md avatar-placeholder">
+                  {{ group.username.charAt(0) | uppercase }}
+                </div>
+              </ng-template>
+              <div class="story-author-meta">
+                <span class="story-author-name">{{ group.username }}</span>
+                <span class="story-author-time" *ngIf="getCurrentStory()?.createdAt">{{ formatDate(getCurrentStory()!.createdAt!) }}</span>
+              </div>
+            </div>
+          </div>
+
+          @if (getCurrentStory(); as story) {
+            <div class="story-modal-body">
+              @if (isVideoStory(story)) {
+                <video class="story-media" [src]="story.mediaUrl" controls autoplay playsinline></video>
+              } @else {
+                <img class="story-media" [src]="story.mediaUrl" [alt]="story.username + ' story'">
+              }
+            </div>
+
+            @if (story.caption) {
+              <p class="story-caption">{{ story.caption }}</p>
+            }
+          }
+
+          <div class="story-nav">
+            <button type="button" class="btn btn-secondary" [disabled]="!hasPreviousStory()" (click)="showPreviousStory()">Previous</button>
+            <button type="button" class="btn btn-primary" (click)="showNextStory()">
+              {{ hasNextStory() ? 'Next' : 'Done' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (storyComposerOpen()) {
+      <div class="story-modal-backdrop" (click)="closeStoryComposer()">
+        <div class="story-modal card story-composer" (click)="$event.stopPropagation()">
+          <button type="button" class="story-close btn btn-icon btn-ghost" (click)="closeStoryComposer()">
+            <span class="material-icons">close</span>
+          </button>
+
+          <div class="story-modal-header">
+            <div class="story-author">
+              <img *ngIf="user()?.profilePicUrl" [src]="user()?.profilePicUrl" class="avatar avatar-md">
+              <div *ngIf="!user()?.profilePicUrl" class="avatar avatar-md avatar-placeholder">
+                {{ user()?.username?.charAt(0) | uppercase }}
+              </div>
+              <div class="story-author-meta">
+                <span class="story-author-name">Add to Your Story</span>
+                <span class="story-author-time">Visible for 24 hours</span>
+              </div>
+            </div>
+          </div>
+
+          <label class="story-upload-zone">
+            <input type="file" accept="image/*,video/*" (change)="onStoryFileSelected($event)" hidden>
+            <span class="material-icons">add_photo_alternate</span>
+            <span>Choose an image or video</span>
+          </label>
+
+          @if (storyPreviewUrl(); as previewUrl) {
+            <div class="story-modal-body">
+              @if (isVideoPreview(previewUrl)) {
+                <video class="story-media" [src]="previewUrl" controls playsinline></video>
+              } @else {
+                <img class="story-media" [src]="previewUrl" alt="Story preview">
+              }
+            </div>
+          }
+
+          <textarea
+            class="story-caption-input"
+            [(ngModel)]="storyCaption"
+            maxlength="220"
+            placeholder="Write a caption for your story..."></textarea>
+
+          @if (storyError(); as error) {
+            <p class="story-error">{{ error }}</p>
+          }
+
+          <div class="story-composer-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeStoryComposer()">Cancel</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="storySubmitPending()"
+              (click)="submitStory()">
+              {{ storySubmitPending() ? 'Posting...' : 'Post Story' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="posts-list">
+      @if (loading()) {
+        <div class="post-card card skeleton" style="height: 300px; margin-bottom: 20px;"></div>
+        <div class="post-card card skeleton" style="height: 400px; margin-bottom: 20px;"></div>
+      } @else {
+        @for (post of posts(); track post.postId) {
+          <div class="post-card card">
+            <div class="post-header">
+              <a [routerLink]="'/profile/' + post.authorId" class="post-author">
+                <img *ngIf="post.author?.profilePicUrl" [src]="post.author?.profilePicUrl" class="avatar avatar-md">
+                <div *ngIf="!post.author?.profilePicUrl" class="avatar avatar-md avatar-placeholder">
+                  {{ post.author?.username?.charAt(0) | uppercase }}
+                </div>
+                <div class="author-info">
+                  <span class="author-name">
+                    <span>{{ post.author?.fullName || post.author?.username }}</span>
+                    @if (post.author?.isVerified) {
+                    <span class="verified-inline-badge material-icons" title="Verified Account">verified</span>
+                    }
+                  </span>
+                  <span class="author-handle">@{{ post.author?.username }}</span>
+                </div>
+              </a>
+              <div class="post-meta">
+                <span class="post-time">{{ formatDate(post.createdAt) }}</span>
+                <button class="btn btn-icon btn-ghost"><span class="material-icons">more_horiz</span></button>
+              </div>
+            </div>
+
+            <div class="post-content">
+              <p>{{ post.content }}</p>
+            </div>
+
+            @if ((post.mediaUrls?.length || 0) > 0) {
+              <div class="post-media" (dblclick)="toggleLike(post)">
+                @if (isVideoPost(post)) {
+                  <video [src]="post.mediaUrls[0]" controls playsinline preload="metadata"></video>
+                } @else {
+                  <img [src]="post.mediaUrls[0]" alt="Post media">
+                }
+                <div class="heart-animation" [class.animate]="post.animatingHeart">
+                  <span class="material-icons">favorite</span>
+                </div>
+              </div>
+            }
+
+            <div class="post-actions">
+
+              <!-- ── Reaction button with picker ── -->
+              <div class="reaction-wrap"
+                   (mouseenter)="openReactionPicker(post.postId)"
+                   (mouseleave)="closeReactionPicker(post.postId)">
+
+                <!-- Picker popup -->
+                @if (isPickerOpen(post.postId)) {
+                  <div class="reaction-picker"
+                       (mouseenter)="openReactionPicker(post.postId)"
+                       (mouseleave)="closeReactionPicker(post.postId)">
+                    @for (r of REACTIONS; track r.label) {
+                      <button
+                        class="reaction-option"
+                        [class.reaction-selected]="post.hasLiked && getReactionEmoji(post) === r.emoji"
+                        [title]="r.label"
+                        (click)="reactToPost(post, r.emoji)">
+                        {{ r.emoji }}
+                      </button>
+                    }
+                  </div>
+                }
+
+                <!-- Main reaction button -->
+                <button
+                  class="action-btn reaction-btn"
+                  [class.active]="post.hasLiked"
+                  (click)="toggleLike(post)"
+                  [title]="post.hasLiked ? 'Remove reaction' : 'React'">
+                  @if (post.hasLiked) {
+                    <span class="reaction-emoji">{{ getReactionEmoji(post) }}</span>
+                  } @else {
+                    <span class="material-icons">favorite_border</span>
+                  }
+                  <span>{{ post.likesCount }}</span>
+                </button>
+              </div>
+
+              <!-- Comment button -->
+              <button class="action-btn" [routerLink]="'/post/' + post.postId">
+                <span class="material-icons">chat_bubble_outline</span>
+                <span>{{ post.commentsCount }}</span>
+              </button>
+
+            </div>
+
+          </div>
+        }
+      }
+    </div>
+
+    @if (hasMore && !loading()) {
+      <div class="load-more">
+        <button class="btn btn-secondary w-full" (click)="loadMore()" [disabled]="loadingMore()">
+          {{ loadingMore() ? 'Loading...' : 'Load More' }}
+        </button>
+      </div>
+    }
+  </div>
+</div>

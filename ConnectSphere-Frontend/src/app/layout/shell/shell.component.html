@@ -1,0 +1,39 @@
+<div class="shell-container">
+  <!-- Desktop Sidebar -->
+  <aside class="shell-sidebar hide-mobile hide-tablet">
+    <app-sidebar></app-sidebar>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="shell-main">
+    <app-topbar></app-topbar>
+    
+    <main class="shell-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="mobile-nav hide-desktop">
+    <a routerLink="/home" routerLinkActive="active" class="mobile-nav-item">
+      <span class="material-icons">home</span>
+    </a>
+    <a routerLink="/explore" routerLinkActive="active" class="mobile-nav-item">
+      <span class="material-icons">search</span>
+    </a>
+    <button class="mobile-nav-item center-fab" (click)="openCreatePost()">
+      <div class="fab-inner">
+        <span class="material-icons">add</span>
+      </div>
+    </button>
+    <a routerLink="/notifications" routerLinkActive="active" class="mobile-nav-item relative">
+      <span class="material-icons">notifications</span>
+      @if (authService.currentUser() !== null) {
+        <span class="notif-dot"></span>
+      }
+    </a>
+    <a [routerLink]="currentUserId() ? '/profile/' + currentUserId() : '/auth/login'" routerLinkActive="active" class="mobile-nav-item">
+      <span class="material-icons">person</span>
+    </a>
+  </nav>
+</div>

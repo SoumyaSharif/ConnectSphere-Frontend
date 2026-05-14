@@ -1,0 +1,420 @@
+<!-- ===== GALAXY CANVAS BACKGROUND ===== -->
+<canvas #galaxyCanvas class="galaxy-canvas"></canvas>
+
+<!-- ===== NAVIGATION BAR ===== -->
+<nav class="navbar" #navBar>
+  <div class="nav-container">
+    <a class="nav-brand" routerLink="/">
+      <span class="material-icons brand-icon">rocket_launch</span>
+      <span class="brand-name glow-text">ConnectSphere</span>
+    </a>
+
+    <div class="nav-links" [class.open]="mobileMenuOpen">
+      <a href="#features" class="nav-link" (click)="mobileMenuOpen = false">Features</a>
+      <a href="#stats" class="nav-link" (click)="mobileMenuOpen = false">Universe Stats</a>
+      <a href="#testimonials" class="nav-link" (click)="mobileMenuOpen = false">Travelers</a>
+      <div class="nav-actions-mobile">
+        <button class="btn btn-outline btn-sm" (click)="navigateTo('/auth/login')">Sign In</button>
+        <button class="btn btn-primary btn-sm" (click)="navigateTo('/auth/register')">Join Universe</button>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn btn-outline btn-sm" (click)="navigateTo('/auth/login')">Sign In</button>
+      <button class="btn btn-primary btn-sm" (click)="navigateTo('/auth/register')">Join Universe</button>
+    </div>
+
+    <button class="mobile-menu-btn" (click)="toggleMobileMenu()" [class.active]="mobileMenuOpen">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero-section" #heroSection>
+  <div class="hero-content">
+
+    <!-- Badge -->
+    <div class="hero-badge">
+      <span class="material-icons">auto_awesome</span>
+      The Next-Gen Social Universe
+    </div>
+
+    <!-- Headline -->
+    <h1 class="hero-headline">
+      Connect Across<br>
+      <span class="glow-text gradient-animate">The Galaxy</span>
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="hero-sub">
+      Where conversations ignite like supernovas. Build your constellation of connections,
+      share stories that orbit the cosmos, and explore a universe of endless possibilities.
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="hero-cta">
+      <button class="btn btn-primary cta-primary" (click)="navigateTo('/auth/register')">
+        <span class="material-icons">rocket_launch</span>
+        Begin Your Journey
+      </button>
+      <button class="btn btn-outline cta-secondary" (click)="navigateTo('/auth/login')">
+        <span class="material-icons">login</span>
+        Sign In
+      </button>
+    </div>
+
+    <!-- Social Proof -->
+    <div class="hero-social-proof">
+      <div class="proof-avatars">
+        <div class="proof-avatar" style="background: linear-gradient(135deg, #7c3aed, #ec4899)">A</div>
+        <div class="proof-avatar" style="background: linear-gradient(135deg, #06b6d4, #7c3aed)">M</div>
+        <div class="proof-avatar" style="background: linear-gradient(135deg, #ec4899, #f59e0b)">S</div>
+        <div class="proof-avatar" style="background: linear-gradient(135deg, #10b981, #06b6d4)">K</div>
+        <div class="proof-avatar proof-more">+9M</div>
+      </div>
+      <span class="proof-text">10M+ cosmic travelers already aboard</span>
+    </div>
+  </div>
+
+  <!-- Floating UI Cards -->
+  <div class="hero-visual">
+    <!-- Main floating card -->
+    <div class="floating-card main-card parallax-slow">
+      <div class="fc-header">
+        <div class="fc-avatar" style="background: linear-gradient(135deg, #7c3aed, #ec4899)">C</div>
+        <div class="fc-info">
+          <div class="fc-name">CosmicUser</div>
+          <div class="fc-handle">@cosmic_orbit</div>
+        </div>
+        <div class="fc-badge">
+          <span class="material-icons" style="font-size:14px; color: #a855f7;">verified</span>
+        </div>
+      </div>
+      <p class="fc-text">Just launched into the ConnectSphere universe 🚀 The views from here are absolutely breathtaking ✨</p>
+      <div class="fc-media-placeholder"></div>
+      <div class="fc-actions">
+        <div class="fc-action">
+          <span class="material-icons" style="font-size:18px; color:#ec4899">favorite</span>
+          <span>2.4k</span>
+        </div>
+        <div class="fc-action">
+          <span class="material-icons" style="font-size:18px; color:#06b6d4">chat_bubble</span>
+          <span>347</span>
+        </div>
+        <div class="fc-action">
+          <span class="material-icons" style="font-size:18px; color:#7c3aed">share</span>
+          <span>89</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification card -->
+    <div class="floating-card notif-card parallax-fast">
+      <div class="notif-item">
+        <div class="notif-dot" style="background:#ec4899"></div>
+        <span class="material-icons" style="color:#ec4899; font-size:18px">favorite</span>
+        <span class="notif-text"><b>AriaChen</b> liked your post</span>
+      </div>
+      <div class="notif-item" style="margin-top:10px">
+        <div class="notif-dot" style="background:#7c3aed"></div>
+        <span class="material-icons" style="color:#7c3aed; font-size:18px">person_add</span>
+        <span class="notif-text"><b>StarGazer99</b> started following you</span>
+      </div>
+    </div>
+
+    <!-- Stats mini card -->
+    <div class="floating-card stats-card parallax-slow">
+      <div class="stats-mini-label">Your Orbit</div>
+      <div class="stats-mini-row">
+        <div class="stats-mini-item">
+          <div class="stats-mini-val">4.2k</div>
+          <div class="stats-mini-key">Followers</div>
+        </div>
+        <div class="stats-mini-sep"></div>
+        <div class="stats-mini-item">
+          <div class="stats-mini-val">891</div>
+          <div class="stats-mini-key">Following</div>
+        </div>
+        <div class="stats-mini-sep"></div>
+        <div class="stats-mini-item">
+          <div class="stats-mini-val">128</div>
+          <div class="stats-mini-key">Posts</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trending card -->
+    <div class="floating-card trending-card parallax-fast">
+      <div class="trending-label">
+        <span class="material-icons" style="font-size:14px; color:#f59e0b">trending_up</span>
+        Trending Now
+      </div>
+      <div class="trending-tag">#CosmicVibes</div>
+      <div class="trending-tag" style="color: var(--accent-cyan)">#NebulaNights</div>
+      <div class="trending-count">12.4K posts today</div>
+    </div>
+
+    <!-- Orb decorations -->
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-orb orb-3"></div>
+
+    <!-- Orbit ring -->
+    <div class="orbit-ring ring-1"></div>
+    <div class="orbit-ring ring-2"></div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-dot"></div>
+    <span>Explore the Universe</span>
+  </div>
+</section>
+
+<!-- ===== STATS SECTION ===== -->
+<section class="stats-section" id="stats">
+  <div class="section-container">
+    <div class="stats-grid">
+      <div class="stat-card animate-on-scroll" *ngFor="let stat of stats">
+        <div class="stat-icon-wrapper">
+          <span class="material-icons">{{ stat.icon }}</span>
+        </div>
+        <div class="stat-value">{{ stat.value }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+        <div class="stat-glow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES SECTION ===== -->
+<section class="features-section" id="features">
+  <div class="section-container">
+    <div class="section-header animate-on-scroll">
+      <div class="section-badge">
+        <span class="material-icons">star</span>
+        Stellar Features
+      </div>
+      <h2 class="section-title">Everything You Need<br><span class="glow-text">In One Universe</span></h2>
+      <p class="section-sub">Built for the modern cosmic traveler — powerful tools to amplify your presence across the galaxy.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card animate-on-scroll" *ngFor="let feature of features; let i = index" [style.animation-delay]="i * 0.1 + 's'">
+        <div class="feature-icon-wrap" [style.background]="feature.gradient">
+          <span class="material-icons feature-icon">{{ feature.icon }}</span>
+        </div>
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-desc">{{ feature.description }}</p>
+        <div class="feature-arrow">
+          <span class="material-icons">arrow_forward</span>
+        </div>
+        <div class="feature-glow" [style.background]="feature.gradient"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SHOWCASE SECTION ===== -->
+<section class="showcase-section">
+  <div class="section-container">
+    <div class="showcase-content animate-on-scroll">
+      <div class="showcase-text">
+        <div class="section-badge">
+          <span class="material-icons">devices</span>
+          Seamless Experience
+        </div>
+        <h2 class="section-title">Your Universe,<br><span class="glow-text">Everywhere</span></h2>
+        <p class="section-sub">
+          Whether you're on desktop, mobile, or tablet — ConnectSphere adapts to your orbit.
+          Notifications, feeds, stories, and messages follow you across all your devices.
+        </p>
+        <ul class="showcase-list">
+          <li>
+            <span class="material-icons check-icon">check_circle</span>
+            <span>Real-time messaging and notifications</span>
+          </li>
+          <li>
+            <span class="material-icons check-icon">check_circle</span>
+            <span>AI-powered content recommendations</span>
+          </li>
+          <li>
+            <span class="material-icons check-icon">check_circle</span>
+            <span>Advanced privacy and security controls</span>
+          </li>
+          <li>
+            <span class="material-icons check-icon">check_circle</span>
+            <span>Cross-platform synchronization</span>
+          </li>
+        </ul>
+        <button class="btn btn-primary" (click)="navigateTo('/auth/register')">
+          <span class="material-icons">rocket_launch</span>
+          Launch Your Profile
+        </button>
+      </div>
+
+      <div class="showcase-visual">
+        <div class="phone-mockup">
+          <div class="phone-screen">
+            <div class="phone-top-bar">
+              <span class="phone-status">ConnectSphere</span>
+            </div>
+            <div class="phone-feed">
+              <div class="phone-story-row">
+                <div class="phone-story" style="background: linear-gradient(135deg, #7c3aed, #ec4899)"></div>
+                <div class="phone-story" style="background: linear-gradient(135deg, #06b6d4, #7c3aed)"></div>
+                <div class="phone-story" style="background: linear-gradient(135deg, #ec4899, #f59e0b)"></div>
+                <div class="phone-story add-story">
+                  <span class="material-icons" style="font-size:14px">add</span>
+                </div>
+              </div>
+              <div class="phone-post">
+                <div class="phone-post-header">
+                  <div class="phone-avatar" style="background: linear-gradient(135deg, #7c3aed, #ec4899)">A</div>
+                  <div class="phone-post-info">
+                    <div class="phone-post-name">AriaStarborn</div>
+                    <div class="phone-post-time">2m ago</div>
+                  </div>
+                </div>
+                <div class="phone-post-img"></div>
+                <div class="phone-post-actions">
+                  <span class="material-icons" style="font-size:16px; color:#ec4899">favorite</span>
+                  <span class="material-icons" style="font-size:16px; color: var(--text-muted)">chat_bubble_outline</span>
+                  <span class="material-icons" style="font-size:16px; color: var(--text-muted)">share</span>
+                </div>
+              </div>
+              <div class="phone-post" style="margin-top:10px">
+                <div class="phone-post-header">
+                  <div class="phone-avatar" style="background: linear-gradient(135deg, #06b6d4, #10b981)">M</div>
+                  <div class="phone-post-info">
+                    <div class="phone-post-name">MarcusNova</div>
+                    <div class="phone-post-time">15m ago</div>
+                  </div>
+                </div>
+                <div class="phone-post-img" style="background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(16,185,129,0.1)); height:60px"></div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-notch"></div>
+        </div>
+        <div class="showcase-orb orb-a"></div>
+        <div class="showcase-orb orb-b"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS SECTION ===== -->
+<section class="testimonials-section" id="testimonials">
+  <div class="section-container">
+    <div class="section-header animate-on-scroll">
+      <div class="section-badge">
+        <span class="material-icons">groups</span>
+        Cosmic Travelers
+      </div>
+      <h2 class="section-title">Voices From<br><span class="glow-text">The Galaxy</span></h2>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card animate-on-scroll" *ngFor="let t of testimonials; let i = index" [style.animation-delay]="i * 0.15 + 's'">
+        <div class="testimonial-stars">
+          <span class="material-icons star-icon" *ngFor="let s of [1,2,3,4,5]">star</span>
+        </div>
+        <p class="testimonial-text">"{{ t.text }}"</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" [style.background]="t.gradient">{{ t.avatar }}</div>
+          <div class="testimonial-info">
+            <div class="testimonial-name">{{ t.name }}</div>
+            <div class="testimonial-handle">{{ t.handle }}</div>
+          </div>
+        </div>
+        <div class="testimonial-quote">"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA SECTION ===== -->
+<section class="cta-section">
+  <div class="section-container">
+    <div class="cta-card animate-on-scroll">
+      <div class="cta-orb cta-orb-1"></div>
+      <div class="cta-orb cta-orb-2"></div>
+
+      <div class="cta-inner">
+        <div class="cta-icon-ring">
+          <span class="material-icons cta-icon">rocket_launch</span>
+        </div>
+        <h2 class="cta-title">Ready to Launch<br><span class="glow-text">Into the Cosmos?</span></h2>
+        <p class="cta-sub">Join 10 million travelers already exploring the ConnectSphere universe. Your journey begins with a single launch.</p>
+        <div class="cta-buttons">
+          <button class="btn btn-primary btn-lg cta-main-btn" (click)="navigateTo('/auth/register')">
+            <span class="material-icons">rocket_launch</span>
+            Create Free Account
+          </button>
+          <button class="btn btn-outline btn-lg" (click)="navigateTo('/auth/login')">
+            <span class="material-icons">login</span>
+            Sign In
+          </button>
+        </div>
+        <p class="cta-note">
+          <span class="material-icons" style="font-size:14px; vertical-align: middle">lock</span>
+          No credit card required · Free forever · Cancel anytime
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <div class="section-container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span class="material-icons" style="color: var(--accent-secondary); font-size:28px">rocket_launch</span>
+          <span class="glow-text" style="font-size:1.4rem; font-weight:700; font-family: var(--font-display)">ConnectSphere</span>
+        </div>
+        <p class="footer-desc">The social platform built for the next generation of cosmic connectors.</p>
+        <div class="footer-social">
+          <button class="btn-icon footer-social-btn" title="Twitter">
+            <span class="material-icons">alternate_email</span>
+          </button>
+          <button class="btn-icon footer-social-btn" title="Instagram">
+            <span class="material-icons">photo_camera</span>
+          </button>
+          <button class="btn-icon footer-social-btn" title="LinkedIn">
+            <span class="material-icons">work</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="footer-links-col">
+        <h4 class="footer-col-title">Platform</h4>
+        <a class="footer-link" routerLink="/auth/register">Get Started</a>
+        <a class="footer-link" href="#features">Features</a>
+        <a class="footer-link" href="#stats">Universe Stats</a>
+      </div>
+
+      <div class="footer-links-col">
+        <h4 class="footer-col-title">Company</h4>
+        <a class="footer-link" href="#">About Us</a>
+        <a class="footer-link" href="#">Careers</a>
+        <a class="footer-link" href="#">Blog</a>
+      </div>
+
+      <div class="footer-links-col">
+        <h4 class="footer-col-title">Legal</h4>
+        <a class="footer-link" href="#">Privacy Policy</a>
+        <a class="footer-link" href="#">Terms of Service</a>
+        <a class="footer-link" href="#">Cookie Policy</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 ConnectSphere. All rights reserved across the cosmos.</p>
+      <p style="color: var(--text-muted); font-size: 0.8rem">Built with ♥ for the universe</p>
+    </div>
+  </div>
+</footer>

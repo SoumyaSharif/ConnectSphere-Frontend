@@ -1,0 +1,166 @@
+<div class="settings-container">
+  <div class="settings-layout">
+    
+    <!-- Sidebar / Tabs -->
+    <div class="settings-sidebar card">
+      <h2 class="sidebar-title">Settings</h2>
+      <nav class="settings-nav">
+        <button class="nav-item" [class.active]="activeTab() === 'PROFILE'" (click)="setTab('PROFILE')">
+          <span class="material-icons">person</span> Edit Profile
+        </button>
+        <button class="nav-item" [class.active]="activeTab() === 'ACCOUNT'" (click)="setTab('ACCOUNT')">
+          <span class="material-icons">manage_accounts</span> Account
+        </button>
+
+      </nav>
+    </div>
+
+    <!-- Content Area -->
+    <div class="settings-content card">
+      @if (activeTab() === 'PROFILE') {
+        <h3 class="section-title">Edit Profile</h3>
+        
+        <div class="avatar-section">
+          <img *ngIf="profileForm.get('profilePicUrl')?.value; else settingsAvatarFallback" [src]="profileForm.get('profilePicUrl')?.value" class="avatar avatar-xl">
+          <ng-template #settingsAvatarFallback>
+            <div class="avatar avatar-xl avatar-placeholder">
+              {{ user()?.username?.charAt(0) | uppercase }}
+            </div>
+          </ng-template>
+          <div class="avatar-actions">
+            <input type="file" accept="image/*" #profilePicInput (change)="onProfilePhotoSelected($event)" hidden>
+            <button type="button" class="btn btn-secondary btn-sm" (click)="profilePicInput.click()">Change Photo</button>
+            <button type="button" class="btn btn-ghost btn-sm" (click)="removeProfilePhoto()">Remove</button>
+          </div>
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="settings-form">
+          <div class="alert alert-success" *ngIf="successMsg()">
+            <span class="material-icons">check_circle</span> {{ successMsg() }}
+          </div>
+          <div class="alert alert-error" *ngIf="errorMsg()">
+            <span class="material-icons">error_outline</span> {{ errorMsg() }}
+          </div>
+
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" class="input-field" formControlName="fullName" placeholder="Your name">
+          </div>
+
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" class="input-field" formControlName="username" placeholder="Username">
+          </div>
+
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea class="input-field" rows="4" formControlName="bio" placeholder="Tell the universe about yourself..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Website</label>
+            <input type="url" class="input-field" formControlName="website" placeholder="https://">
+          </div>
+
+
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="saving()">
+              {{ saving() ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
+      }
+
+      @if (activeTab() === 'ACCOUNT') {
+        <h3 class="section-title">Account Settings</h3>
+        <p class="text-muted">Manage your email address, password, verification status, and account deletion.</p>
+        <div class="alert alert-success" *ngIf="successMsg()">
+          <span class="material-icons">check_circle</span> {{ successMsg() }}
+        </div>
+        <div class="alert alert-error" *ngIf="errorMsg()">
+          <span class="material-icons">error_outline</span> {{ errorMsg() }}
+        </div>
+        
+        <div class="settings-list mt-4">
+          <div class="settings-item">
+            <div class="item-info">
+              <h4>Email Address</h4>
+              <p>{{ user()?.email }}</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" (click)="updateEmail()" [disabled]="saving()">Update</button>
+          </div>
+          <div class="settings-item">
+            <div class="item-info">
+              <h4>Password</h4>
+              <p>Last changed 3 months ago</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" (click)="changePassword()" [disabled]="saving()">Change</button>
+          </div>
+          
+          <!-- Verification Section -->
+          <div class="settings-item" *ngIf="user()?.isVerified">
+            <div class="item-info">
+              <div class="d-flex align-items-center gap-2">
+                <h4>Account Verification</h4>
+                <span class="material-icons verified-icon-small">verified</span>
+              </div>
+              <p>Your profile is showing the verified badge right now. Removing it will start a refund for the latest verification purchase.</p>
+            </div>
+            <button class="btn btn-ghost btn-sm text-danger" (click)="quitVerification()" [disabled]="saving()">
+              {{ saving() ? 'Processing Refund...' : 'Remove Blue Tick' }}
+            </button>
+          </div>
+
+          <div class="settings-item" *ngIf="!user()?.isVerified">
+            <div class="item-info">
+              <h4>Account Verification</h4>
+
+              <!-- Denied / cooldown state -->
+              <ng-container *ngIf="isDeniedCooldown(); else notDenied">
+                <div class="denied-banner">
+                  <span class="material-icons">block</span>
+                  <div>
+                    <strong>Permission Denied</strong>
+                    <p>Your verification request was rejected by an admin.</p>
+                    <p>A refund has been processed to your original payment method.</p>
+                    <p class="retry-msg">🔒 You can try again after <strong>{{ retryDate() }}</strong>.</p>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #notDenied>
+                <p>Your account is not verified right now. Buy the blue tick from your profile page whenever you want it back.</p>
+              </ng-template>
+            </div>
+
+            <a
+              *ngIf="!isDeniedCooldown()"
+              class="btn btn-primary btn-sm"
+              [routerLink]="['/profile', user()?.userId]"
+            >Get Blue Tick</a>
+
+            <button
+              *ngIf="isDeniedCooldown()"
+              class="btn btn-secondary btn-sm"
+              disabled
+              title="You cannot re-apply until {{ retryDate() }}"
+            >
+              <span class="material-icons" style="font-size:15px;margin-right:4px">lock_clock</span>
+              Try after {{ retryDate() }}
+            </button>
+          </div>
+
+          <div class="settings-item danger-zone">
+            <div class="item-info">
+              <h4>Delete Account</h4>
+              <p>Permanently delete your account and all data</p>
+            </div>
+            <button class="btn btn-danger btn-sm" (click)="deleteAccount()" [disabled]="saving()">Delete</button>
+          </div>
+        </div>
+      }
+
+
+    </div>
+  </div>
+</div>

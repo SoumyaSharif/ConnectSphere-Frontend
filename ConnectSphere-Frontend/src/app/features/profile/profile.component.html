@@ -1,0 +1,309 @@
+@if (toastMessage()) {
+<div class="toast-notification" [class.toast-success]="toastSuccess()" [class.toast-error]="!toastSuccess()">
+  <span class="material-icons">{{ toastSuccess() ? 'verified' : 'error_outline' }}</span>
+  <span>{{ toastMessage() }}</span>
+</div>
+}
+
+@if (paymentLoading()) {
+<div class="payment-overlay">
+  <div class="payment-overlay-card">
+    <span class="material-icons rotating pay-spinner">autorenew</span>
+    <p>Opening payment gateway...</p>
+  </div>
+</div>
+}
+
+<div class="profile-container" *ngIf="!loading()">
+  <div class="profile-header card" *ngIf="profileUser()">
+    <div class="profile-cover"></div>
+    <div class="profile-shell">
+      <div class="profile-topline">
+        <div class="profile-avatar-wrapper">
+          <app-user-avatar
+            [src]="profileUser()?.profilePicUrl"
+            [username]="profileUser()?.username"
+            size="xl"
+            [verified]="false"
+          ></app-user-avatar>
+          @if (profileUser()?.isVerified) {
+          <div class="avatar-verified-badge" title="Verified Account">
+            <span class="material-icons">verified</span>
+          </div>
+          }
+        </div>
+
+        <div class="profile-summary">
+          <h1 class="profile-name">
+            {{ profileUser()?.fullName || profileUser()?.username }}
+            @if (profileUser()?.isVerified) {
+            <span class="verified-badge" title="Verified Account">
+              <span class="material-icons">verified</span>
+            </span>
+            }
+          </h1>
+          <p class="profile-handle">@{{ profileUser()?.username }}</p>
+
+          <div class="profile-stats">
+            <a class="stat-item">
+              <span class="stat-value">{{ posts().length }}</span>
+              <span class="stat-label">Posts</span>
+            </a>
+
+            <button class="stat-item stat-button" type="button" (click)="openConnections('FOLLOWERS')">
+              <span class="stat-value">{{ followersCount() }}</span>
+              <span class="stat-label">Followers</span>
+            </button>
+
+            <button class="stat-item stat-button" type="button" (click)="openConnections('FOLLOWING')">
+              <span class="stat-value">{{ followingCount() }}</span>
+              <span class="stat-label">Following</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-details">
+        <p class="profile-bio" *ngIf="profileUser()?.bio">{{ profileUser()?.bio }}</p>
+
+        <div class="profile-meta">
+          <span class="meta-item" *ngIf="profileUser()?.website">
+            <span class="material-icons">link</span>
+            <a [href]="profileUser()?.website" target="_blank">{{ profileUser()?.website?.replace('https://', '') }}</a>
+          </span>
+          <span class="meta-item">
+            <span class="material-icons">calendar_today</span>
+            Joined {{ formatDate(profileUser()?.createdAt!) }}
+          </span>
+        </div>
+
+        <div class="profile-actions">
+          @if (isOwnProfile()) {
+            <button class="btn btn-icon btn-ghost hide-desktop" (click)="openMobileMenu()" title="More Options">
+              <span class="material-icons">menu</span>
+            </button>
+            <a routerLink="/settings" class="btn btn-secondary hide-mobile">Edit Profile</a>
+            @if (verificationPendingUi() || profileUser()?.verificationPending) {
+            <button class="btn btn-pending-status" disabled title="Payment complete. Waiting for admin approval.">
+              <span class="material-icons verify-icon">hourglass_top</span>
+              Wait for admin's approval
+            </button>
+            } @else if (isDeniedCooldown()) {
+            <button
+              class="btn btn-denied-status"
+              disabled
+              [title]="'Verification is unavailable until ' + retryDate()">
+              <span class="material-icons verify-icon">lock_clock</span>
+              Try after {{ retryDate() }}
+            </button>
+            } @else if (!profileUser()?.isVerified) {
+            <button
+              class="btn btn-verify"
+              id="get-verified-btn"
+              (click)="getVerified()"
+              [disabled]="paymentLoading()"
+              title="Get the blue verification tick for $2.99">
+              <span class="material-icons verify-icon">verified</span>
+              Get Verified - $2.99
+            </button>
+            } @else {
+            <button class="btn btn-verified-status" disabled>
+              <span class="material-icons verify-icon verified-icon-accent">verified</span>
+              Verified
+            </button>
+            }
+          } @else {
+            <button class="btn" [class.btn-primary]="!isFollowing()" [class.btn-secondary]="isFollowing()"
+              (click)="toggleFollow()">
+              {{ isFollowing() ? 'Following' : 'Follow' }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-tabs">
+    <button class="tab-item" [class.active]="activeTab() === 'POSTS'" (click)="setTab('POSTS')" title="Posts">
+      <span class="material-icons">grid_on</span>
+    </button>
+    <button class="tab-item" [class.active]="activeTab() === 'MEDIA'" (click)="setTab('MEDIA')" title="Media">
+      <span class="material-icons">smart_display</span>
+    </button>
+    <button class="tab-item" [class.active]="activeTab() === 'LIKES'" (click)="setTab('LIKES')" title="Likes">
+      <span class="material-icons">favorite_border</span>
+    </button>
+  </div>
+
+  <div class="profile-content">
+    @if (activeTab() === 'LIKES') {
+    <div class="empty-state animate-item card">
+      <span class="material-icons">construction</span>
+      <p>This tab is under construction</p>
+    </div>
+    } @else {
+      @if (getGridPosts().length > 0) {
+      <div class="profile-post-grid">
+        @for (post of getGridPosts(); track post.postId) {
+        <div style="position: relative;" class="animate-item">
+          <a [routerLink]="'/post/' + post.postId" class="profile-post-tile">
+            @if (post.mediaUrls.length > 0) {
+            @if (isVideoPost(post)) {
+            <video [src]="post.mediaUrls[0]" muted playsinline preload="metadata"></video>
+            <span class="tile-badge material-icons">smart_display</span>
+            } @else {
+            <img [src]="post.mediaUrls[0]" [alt]="post.content || 'Profile post'">
+            }
+          } @else {
+          <div class="text-post-tile">
+            <span>{{ post.content || 'Untitled post' }}</span>
+          </div>
+          }
+
+          <div class="tile-overlay">
+            <div class="tile-stat">
+              <span class="material-icons">favorite</span>
+              <span>{{ post.likesCount }}</span>
+            </div>
+            <div class="tile-stat">
+              <span class="material-icons">chat_bubble</span>
+              <span>{{ post.commentsCount }}</span>
+            </div>
+          </div>
+          </a>
+          @if (isOwnProfile()) {
+            <button class="delete-post-btn" (click)="deletePost($event, post.postId)" title="Delete Post">
+              <span class="material-icons">delete</span>
+            </button>
+          }
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="empty-state animate-item card">
+        <span class="material-icons">photo_library</span>
+        <p>No posts yet</p>
+      </div>
+      }
+    }
+  </div>
+</div>
+
+@if (connectionSheetOpen()) {
+<div class="connection-backdrop" (click)="closeConnections()">
+  <div class="connection-sheet card" (click)="$event.stopPropagation()">
+    <div class="connection-sheet-header">
+      <div class="connection-tabs">
+        <button
+          class="connection-tab"
+          [class.active]="connectionSheetTab() === 'FOLLOWERS'"
+          type="button"
+          (click)="openConnections('FOLLOWERS')">
+          Followers
+          <span>{{ followersCount() }}</span>
+        </button>
+        <button
+          class="connection-tab"
+          [class.active]="connectionSheetTab() === 'FOLLOWING'"
+          type="button"
+          (click)="openConnections('FOLLOWING')">
+          Following
+          <span>{{ followingCount() }}</span>
+        </button>
+      </div>
+
+      <button class="connection-close" type="button" (click)="closeConnections()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    @if (connectionLoading()) {
+    <div class="connection-state">
+      <span class="material-icons rotating">autorenew</span>
+      <p>Loading connections...</p>
+    </div>
+    } @else if (connectionUsers().length === 0) {
+    <div class="connection-state">
+      <span class="material-icons">group_off</span>
+      <p>No {{ connectionSheetTab().toLowerCase() }} yet.</p>
+    </div>
+    } @else {
+    <div class="connection-list">
+      @for (user of connectionUsers(); track user.userId) {
+      <a class="connection-user" [routerLink]="'/profile/' + user.userId" (click)="closeConnections()">
+        <div class="connection-avatar">
+          <app-user-avatar
+            [src]="user.profilePicUrl"
+            [username]="user.username"
+            size="md"
+            [verified]="false"
+          ></app-user-avatar>
+        </div>
+
+        <div class="connection-user-copy">
+          <strong class="connection-user-name">
+            <span>{{ user.fullName || user.username }}</span>
+            @if (user.isVerified) {
+            <span class="connection-verified-badge material-icons" title="Verified Account">verified</span>
+            }
+          </strong>
+          <span>@{{ user.username }}</span>
+        </div>
+
+        <span class="connection-relationship">
+          {{ connectionSheetTab() === 'FOLLOWERS' ? 'Follows this profile' : 'Followed by this profile' }}
+        </span>
+      </a>
+      }
+    </div>
+    }
+  </div>
+</div>
+}
+
+<div *ngIf="loading()" class="loading-state">
+  <span class="material-icons rotating" style="font-size: 48px; color: var(--accent-primary);">autorenew</span>
+</div>
+
+@if (mobileMenuOpen()) {
+<div class="connection-backdrop" (click)="closeMobileMenu()">
+  <div class="connection-sheet" (click)="$event.stopPropagation()">
+    <div class="connection-sheet-header">
+      <h3 style="margin: 0; font-size: 1.2rem;">More Options</h3>
+      <button class="connection-close" (click)="closeMobileMenu()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="connection-list" style="padding: 16px 8px;">
+      <a routerLink="/home" class="connection-user" (click)="closeMobileMenu()">
+        <span class="material-icons" style="font-size: 24px; color: var(--text-secondary);">home</span>
+        <div class="connection-user-copy"><strong style="font-size: 1.1rem;">Home</strong></div>
+      </a>
+      <a routerLink="/explore" class="connection-user" (click)="closeMobileMenu()">
+        <span class="material-icons" style="font-size: 24px; color: var(--text-secondary);">search</span>
+        <div class="connection-user-copy"><strong style="font-size: 1.1rem;">Explore</strong></div>
+      </a>
+      <a routerLink="/notifications" class="connection-user" (click)="closeMobileMenu()">
+        <span class="material-icons" style="font-size: 24px; color: var(--text-secondary);">notifications</span>
+        <div class="connection-user-copy"><strong style="font-size: 1.1rem;">Notifications</strong></div>
+      </a>
+      <a routerLink="/settings" class="connection-user" (click)="closeMobileMenu()">
+        <span class="material-icons" style="font-size: 24px; color: var(--text-secondary);">settings</span>
+        <div class="connection-user-copy"><strong style="font-size: 1.1rem;">Settings</strong></div>
+      </a>
+      <div class="divider" style="margin: 8px 16px; opacity: 0.5;"></div>
+      <button class="connection-user" style="color: #ef4444; background: transparent; border: none; width: 100%; text-align: left; cursor: pointer;" (click)="logout()">
+        <span class="material-icons" style="font-size: 24px;">logout</span>
+        <div class="connection-user-copy"><strong style="font-size: 1.1rem;">Log Out</strong></div>
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+@if (toastMessage()) {
+<div class="toast-notification" [class.toast-success]="toastSuccess()" [class.toast-error]="!toastSuccess()">
+  <span class="material-icons">{{ toastSuccess() ? 'check_circle' : 'error_outline' }}</span>
+  <span>{{ toastMessage() }}</span>
+</div>
+}

@@ -1,0 +1,132 @@
+<header class="topbar">
+  <!-- Left: Logo (Mobile only, Desktop uses sidebar logo) -->
+  <div class="topbar-left hide-desktop">
+    <div class="logo">
+      <span class="material-icons cosmic-icon">rocket_launch</span>
+      <span class="logo-text glow-text">ConnectSphere</span>
+    </div>
+  </div>
+
+  <!-- Center: Search -->
+  <div class="topbar-center">
+    <div class="search-bar">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" placeholder="Search the cosmos..." [(ngModel)]="searchQuery" (keyup)="onSearch($event)">
+    </div>
+  </div>
+
+  <!-- Right: Actions & User -->
+  <div class="topbar-right">
+    <button class="btn btn-primary hide-mobile" (click)="openCreatePost()">
+      <span class="material-icons">add</span> New Post
+    </button>
+    
+    <a routerLink="/notifications" class="action-btn hide-mobile">
+      <span class="material-icons">notifications</span>
+      @if (unreadCount() > 0) {
+        <span class="notif-badge">{{ unreadCount() }}</span>
+      }
+    </a>
+
+    <div class="user-menu" *ngIf="user()">
+      <a [routerLink]="'/profile/' + user()?.userId" class="avatar-link">
+        <div class="avatar-wrapper-sm">
+          <app-user-avatar
+            [src]="user()?.profilePicUrl"
+            [username]="user()?.username"
+            size="sm"
+            [verified]="!!user()?.isVerified"
+          ></app-user-avatar>
+        </div>
+      </a>
+    </div>
+  </div>
+</header>
+
+@if (postComposer.isOpen()) {
+  <div class="composer-backdrop" (click)="closeCreatePost()">
+    <div class="composer-modal card" (click)="$event.stopPropagation()">
+      <div class="composer-header">
+        <div>
+          <p class="composer-eyebrow">Create</p>
+          <h3>New Post</h3>
+        </div>
+        <button type="button" class="btn btn-icon btn-ghost" (click)="closeCreatePost()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="composer-body">
+        <div class="composer-preview">
+          @if (postPreviewUrl(); as previewUrl) {
+            @if (isVideoPreview()) {
+              <video class="composer-media" [src]="previewUrl" controls playsinline preload="metadata"></video>
+            } @else {
+              <img class="composer-media" [src]="previewUrl" alt="Post preview">
+            }
+          } @else {
+            <label class="composer-upload-zone">
+              <input type="file" accept="image/*,video/mp4,video/webm,video/ogg" hidden (change)="onPostFileSelected($event)">
+              <span class="material-icons">add_photo_alternate</span>
+              <span class="upload-title">Choose photo or video</span>
+              <span class="upload-subtitle">Share a moment like Instagram</span>
+            </label>
+          }
+        </div>
+
+        <div class="composer-form">
+          <div class="composer-user">
+            <app-user-avatar
+              [src]="user()?.profilePicUrl"
+              [username]="user()?.username"
+              size="md"
+              [verified]="!!user()?.isVerified"
+            ></app-user-avatar>
+            <div>
+              <span class="composer-username">{{ user()?.fullName || user()?.username }}</span>
+              <span class="composer-handle">@{{ user()?.username }}</span>
+            </div>
+          </div>
+
+          <label class="composer-upload-btn btn btn-secondary">
+            <input type="file" accept="image/*,video/mp4,video/webm,video/ogg" hidden (change)="onPostFileSelected($event)">
+            {{ postPreviewUrl() ? 'Replace Media' : 'Add Media' }}
+          </label>
+
+          <textarea
+            class="composer-caption"
+            [(ngModel)]="postCaption"
+            maxlength="500"
+            placeholder="Write a caption..."></textarea>
+
+          <div class="composer-options">
+            <label class="composer-select-label" for="post-visibility">Audience</label>
+            <select
+              id="post-visibility"
+              class="composer-select"
+              [ngModel]="postVisibility()"
+              (ngModelChange)="postVisibility.set($event)">
+              <option value="PUBLIC">Public</option>
+              <option value="FOLLOWERS">Followers</option>
+            </select>
+          </div>
+
+          @if (postError()) {
+            <p class="composer-error">{{ postError() }}</p>
+          }
+
+          <div class="composer-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeCreatePost()">Cancel</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="postSubmitPending()"
+              (click)="submitPost()">
+              {{ postSubmitPending() ? 'Posting...' : 'Share Post' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

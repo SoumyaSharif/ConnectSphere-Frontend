@@ -1,0 +1,53 @@
+<div class="sidebar-wrapper">
+  <!-- Logo Area -->
+  <div class="logo-area">
+    <a routerLink="/" class="logo">
+      <span class="material-icons cosmic-icon">rocket_launch</span>
+      <span class="logo-text glow-text">ConnectSphere</span>
+    </a>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav-menu">
+    @for (item of navItems; track item.route) {
+      <a [routerLink]="item.route === '/profile/' ? getProfileRoute() : item.route" 
+         routerLinkActive="active" 
+         [routerLinkActiveOptions]="item.route === '/home' ? {exact:true} : {exact:false}"
+         class="nav-link">
+        <span class="material-icons nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    }
+    
+    @if (isAdmin()) {
+      <a routerLink="/admin" routerLinkActive="active" class="nav-link admin-link">
+        <span class="material-icons nav-icon">admin_panel_settings</span>
+        <span class="nav-label">Admin Panel</span>
+      </a>
+    }
+  </nav>
+
+  <!-- Bottom User Card -->
+  <div class="user-card" *ngIf="user()">
+    <a [routerLink]="getProfileRoute()" class="user-info">
+      <app-user-avatar
+        [src]="user()?.profilePicUrl"
+        [username]="user()?.username"
+        size="md"
+        [verified]="false"
+      ></app-user-avatar>
+      <div class="user-details">
+        <div class="user-name">
+          {{ user()?.fullName || user()?.username }}
+          @if (user()?.isVerified) {
+            <span class="verified-badge-small material-icons" title="Verified Account">verified</span>
+          }
+        </div>
+        <div class="user-handle">@{{ user()?.username }}</div>
+      </div>
+    </a>
+    <button class="logout-btn" (click)="logout()" title="Logout">
+      <span class="material-icons">logout</span>
+    </button>
+  </div>
+</div>

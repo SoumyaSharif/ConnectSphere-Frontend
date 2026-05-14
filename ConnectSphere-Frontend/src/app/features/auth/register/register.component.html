@@ -1,0 +1,87 @@
+<div class="auth-wrapper">
+  <div class="stars"></div>
+  <div class="nebula nebula-1"></div>
+  <div class="nebula nebula-2"></div>
+
+  <div class="auth-container">
+    <div class="brand-header">
+      <span class="material-icons cosmic-icon">rocket_launch</span>
+      <h1 class="glow-text">ConnectSphere</h1>
+    </div>
+
+    <div class="card auth-card" #card>
+      <div class="auth-header">
+        <h2>Join the Universe</h2>
+        <p>Create an account to start exploring.</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+        <div class="alert alert-error" *ngIf="error">
+          <span class="material-icons">error_outline</span>
+          {{ error }}
+        </div>
+
+        <div class="form-group">
+          <label>Full Name</label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">badge</span>
+            <input type="text" class="input-field with-icon" formControlName="fullName" placeholder="Jane Doe">
+          </div>
+          <div class="error-text" *ngIf="f['fullName'].touched && f['fullName'].errors?.['required']">Full Name is required</div>
+        </div>
+
+        <div class="form-group">
+          <label>Username</label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">alternate_email</span>
+            <input type="text" class="input-field with-icon" formControlName="username" placeholder="janedoe99">
+          </div>
+          <div class="error-text" *ngIf="f['username'].touched && f['username'].errors?.['required']">Username is required</div>
+        </div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">email</span>
+            <input type="email" class="input-field with-icon" formControlName="email" placeholder="astronaut@space.com">
+          </div>
+          <div class="error-text" *ngIf="f['email'].touched && f['email'].errors?.['required']">Email is required</div>
+          <div class="error-text" *ngIf="f['email'].touched && f['email'].errors?.['pattern']">Invalid email format (only letters, numbers, and dots allowed)</div>
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">lock</span>
+            <input [type]="showPassword ? 'text' : 'password'" class="input-field with-icon" formControlName="password" placeholder="••••••••">
+            <button type="button" class="password-toggle" (click)="togglePassword()">
+              <span class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+            </button>
+          </div>
+          <div class="error-text" *ngIf="f['password'].touched && f['password'].errors?.['required']">Password is required</div>
+          <div class="error-text" *ngIf="f['password'].touched && f['password'].errors?.['minlength']">Password must be at least 8 characters</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full submit-btn" [disabled]="loading">
+          <span *ngIf="loading" class="material-icons rotating">autorenew</span>
+          <span *ngIf="!loading">Create Account</span>
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>OR ORBIT WITH</span>
+      </div>
+
+      <div class="social-login">
+        <button class="btn btn-secondary w-full" (click)="loginWithGoogle()">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="G" class="social-icon">
+          Google
+        </button>
+      </div>
+
+      <p class="auth-footer">
+        Already have an account? <a routerLink="/auth/login">Login</a>
+      </p>
+    </div>
+  </div>
+</div>

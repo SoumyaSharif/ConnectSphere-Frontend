@@ -1,0 +1,652 @@
+<div class="admin-container">
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="admin-header animate-item">
+    <div class="header-content">
+      <span class="material-icons cosmic-icon">admin_panel_settings</span>
+      <div>
+        <h1>Admin Control Center</h1>
+        <p class="text-muted">Manage the ConnectSphere universe</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TABS ═══ -->
+  <div class="admin-tabs">
+    <button class="tab-item" [class.active]="activeTab() === 'OVERVIEW'" (click)="setTab('OVERVIEW')">
+      <span class="material-icons tab-icon">dashboard</span> Overview
+    </button>
+    <button class="tab-item" [class.active]="activeTab() === 'USERS'" (click)="setTab('USERS')">
+      <span class="material-icons tab-icon">group</span>
+      Users @if (totalElements() > 0) { <span class="tab-badge">{{ formatNumber(totalElements()) }}</span> }
+    </button>
+  </div>
+
+  <div class="admin-content">
+
+    <!-- ═══ OVERVIEW TAB ═══ -->
+    @if (activeTab() === 'OVERVIEW') {
+
+      @if (statsLoading()) {
+        <div class="stats-skeleton-grid">
+          @for (i of [1,2,3,4,5,6,7,8]; track i) {
+            <div class="stat-card card skeleton-card">
+              <div class="skeleton skeleton-icon"></div>
+              <div class="skeleton-info">
+                <div class="skeleton skeleton-num"></div>
+                <div class="skeleton skeleton-label"></div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (statsError() && !statsLoading()) {
+        <div class="error-state card animate-item">
+          <span class="material-icons error-icon">cloud_off</span>
+          <p>{{ statsError() }}</p>
+          <button class="btn btn-primary btn-sm" (click)="loadStats()">
+            <span class="material-icons">refresh</span> Retry
+          </button>
+        </div>
+      }
+
+      @if (stats() && !statsLoading()) {
+
+        <!-- User metrics row -->
+        <div class="section-label animate-item">User Metrics</div>
+        <div class="stats-grid animate-item">
+          <div class="stat-card card">
+            <span class="material-icons stat-icon text-cyan">group</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.totalUsers) }}</h3>
+              <p>Total Users</p>
+            </div>
+          </div>
+          <div class="stat-card card">
+            <span class="material-icons stat-icon text-green">check_circle</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.activeUsers) }}</h3>
+              <p>Active</p>
+            </div>
+          </div>
+          <div class="stat-card card">
+            <span class="material-icons stat-icon text-red">block</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.suspendedUsers) }}</h3>
+              <p>Suspended</p>
+            </div>
+          </div>
+          <div class="stat-card card">
+            <span class="material-icons stat-icon text-orange">shield</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.adminCount) }}</h3>
+              <p>Admins</p>
+            </div>
+          </div>
+          <div class="stat-card card">
+            <span class="material-icons stat-icon text-purple">verified</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.verifiedUsers) }}</h3>
+              <p>Verified</p>
+            </div>
+          </div>
+          <div class="stat-card card">
+            <span class="material-icons stat-icon text-muted">person</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.localUsers) }}</h3>
+              <p>Local Auth</p>
+            </div>
+          </div>
+          <div class="stat-card card">
+            <span class="material-icons stat-icon text-cyan">g_mobiledata</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.googleUsers) }}</h3>
+              <p>Google Auth</p>
+            </div>
+          </div>
+          <div class="stat-card card">
+            <span class="material-icons stat-icon text-green">trending_up</span>
+            <div class="stat-info">
+              <h3>+{{ formatNumber(stats()!.newUsersLast7Days) }}</h3>
+              <p>New (7 days)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social metrics row -->
+        <div class="section-label animate-item" style="margin-top:32px">Social Activity</div>
+        <div class="stats-grid stats-grid-4 animate-item">
+          <div class="stat-card card" [class.stat-unavailable]="stats()!.totalPosts === null">
+            <span class="material-icons stat-icon text-purple">article</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.totalPosts) }}</h3>
+              <p>Total Posts</p>
+              @if (stats()!.totalPosts === null) { <span class="unavailable-tag">service offline</span> }
+            </div>
+          </div>
+          <div class="stat-card card" [class.stat-unavailable]="stats()!.totalComments === null">
+            <span class="material-icons stat-icon text-pink">chat_bubble</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.totalComments) }}</h3>
+              <p>Total Comments</p>
+              @if (stats()!.totalComments === null) { <span class="unavailable-tag">service offline</span> }
+            </div>
+          </div>
+          <div class="stat-card card" [class.stat-unavailable]="stats()!.totalLikes === null">
+            <span class="material-icons stat-icon text-red">favorite</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.totalLikes) }}</h3>
+              <p>Total Likes</p>
+              @if (stats()!.totalLikes === null) { <span class="unavailable-tag">service offline</span> }
+            </div>
+          </div>
+          <div class="stat-card card" [class.stat-unavailable]="stats()!.totalFollows === null">
+            <span class="material-icons stat-icon text-cyan">people</span>
+            <div class="stat-info">
+              <h3>{{ formatNumber(stats()!.totalFollows) }}</h3>
+              <p>Total Follows</p>
+              @if (stats()!.totalFollows === null) { <span class="unavailable-tag">service offline</span> }
+            </div>
+          </div>
+        </div>
+
+        <!-- Growth snapshot -->
+        <div class="dashboard-panels animate-item" style="margin-top:32px">
+          <div class="card panel">
+            <h3 class="panel-title">
+              <span class="material-icons">insights</span> Growth Snapshot
+            </h3>
+            <div class="growth-rows">
+              <div class="growth-row">
+                <span class="growth-label">New signups (last 7 days)</span>
+                <span class="growth-value text-green">+{{ formatNumber(stats()!.newUsersLast7Days) }}</span>
+              </div>
+              <div class="growth-row">
+                <span class="growth-label">New signups (last 30 days)</span>
+                <span class="growth-value text-green">+{{ formatNumber(stats()!.newUsersLast30Days) }}</span>
+              </div>
+              <div class="growth-row">
+                <span class="growth-label">Active user rate</span>
+                <span class="growth-value text-cyan">
+                  {{ stats()!.totalUsers > 0 ? ((stats()!.activeUsers / stats()!.totalUsers) * 100 | number:'1.1-1') + '%' : '—' }}
+                </span>
+              </div>
+              <div class="growth-row">
+                <span class="growth-label">Google OAuth users</span>
+                <span class="growth-value text-purple">
+                  {{ stats()!.totalUsers > 0 ? ((stats()!.googleUsers / stats()!.totalUsers) * 100 | number:'1.1-1') + '%' : '—' }}
+                </span>
+              </div>
+              <div class="growth-row">
+                <span class="growth-label">Verification rate</span>
+                <span class="growth-value text-orange">
+                  {{ stats()!.totalUsers > 0 ? ((stats()!.verifiedUsers / stats()!.totalUsers) * 100 | number:'1.1-1') + '%' : '—' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card panel">
+            <h3 class="panel-title">
+              <span class="material-icons">manage_accounts</span> Quick Actions
+            </h3>
+            <div class="quick-actions">
+              <button class="btn btn-secondary" (click)="setTab('USERS')">
+                <span class="material-icons">group</span> Manage Users
+              </button>
+              <button class="btn btn-verify" (click)="showPendingVerifications()">
+                <span class="material-icons">verified</span> Pending Verifications
+              </button>
+              <button class="btn btn-secondary" (click)="loadStats()">
+                <span class="material-icons">refresh</span> Refresh Stats
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- ═══ USERS TAB ═══ -->
+    @if (activeTab() === 'USERS') {
+
+      <!-- Filter bar -->
+      <div class="filter-bar card animate-item">
+        <div class="search-wrap">
+          <span class="material-icons search-icon">search</span>
+          <input
+            class="search-input"
+            type="text"
+            placeholder="Search by username, email, or name…"
+            [value]="searchQuery()"
+            (input)="onSearchInput($any($event.target).value)"
+            id="admin-user-search"
+          />
+          @if (searchQuery()) {
+            <button class="clear-btn" (click)="onSearchInput('')">
+              <span class="material-icons">close</span>
+            </button>
+          }
+        </div>
+
+        <div class="filter-chips">
+          <select class="filter-select" [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event); applyFilter()" id="filter-role">
+            <option value="">All Roles</option>
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="GUEST">GUEST</option>
+          </select>
+
+          <select class="filter-select" [ngModel]="providerFilter()" (ngModelChange)="providerFilter.set($event); applyFilter()" id="filter-provider">
+            <option value="">All Providers</option>
+            <option value="LOCAL">LOCAL</option>
+            <option value="GOOGLE">GOOGLE</option>
+          </select>
+
+          <select class="filter-select" [ngModel]="activeFilter()" (ngModelChange)="activeFilter.set($event === '' ? '' : $event === 'true'); applyFilter()" id="filter-active">
+            <option value="">Any Status</option>
+            <option value="true">Active</option>
+            <option value="false">Suspended</option>
+          </select>
+
+          <select class="filter-select" [ngModel]="verifiedFilter()" (ngModelChange)="verifiedFilter.set($event === '' ? '' : $event === 'true'); applyFilter()" id="filter-verified">
+            <option value="">Any Verification</option>
+            <option value="true">Verified</option>
+            <option value="false">Unverified</option>
+          </select>
+
+          <button class="btn btn-ghost btn-sm" (click)="clearFilters()" title="Clear all filters">
+            <span class="material-icons">filter_alt_off</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading skeleton -->
+      @if (usersLoading()) {
+        <div class="table-skeleton card animate-item">
+          @for (i of [1,2,3,4,5,6,7,8]; track i) {
+            <div class="skeleton-row">
+              <div class="skeleton skeleton-avatar-sm"></div>
+              <div class="skeleton-row-info">
+                <div class="skeleton skeleton-name"></div>
+                <div class="skeleton skeleton-email"></div>
+              </div>
+              <div class="skeleton skeleton-badge"></div>
+              <div class="skeleton skeleton-badge"></div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Error state -->
+      @if (usersError() && !usersLoading()) {
+        <div class="error-state card animate-item">
+          <span class="material-icons error-icon">cloud_off</span>
+          <p>{{ usersError() }}</p>
+          <button class="btn btn-primary btn-sm" (click)="loadUsers()">
+            <span class="material-icons">refresh</span> Retry
+          </button>
+        </div>
+      }
+
+      <!-- Empty state -->
+      @if (!usersLoading() && !usersError() && users().length === 0) {
+        <div class="empty-state card animate-item">
+          <span class="material-icons empty-icon">person_search</span>
+          <h3>No users found</h3>
+          <p>Try adjusting your search or filter criteria.</p>
+          <button class="btn btn-secondary btn-sm" (click)="clearFilters()">Clear filters</button>
+        </div>
+      }
+
+      <!-- User table -->
+      @if (!usersLoading() && !usersError() && users().length > 0) {
+        <div class="users-table-wrap card animate-item">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Provider</th>
+                <th>Status</th>
+                <th>Verified</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of users(); track user.userId) {
+                <tr class="user-row" (click)="openDrawer(user.userId)" [title]="'View ' + user.username">
+                  <td class="user-cell">
+                    @if (user.profilePicUrl) {
+                      <img [src]="user.profilePicUrl" [alt]="user.username" class="avatar avatar-sm">
+                    } @else {
+                      <div class="avatar avatar-sm avatar-placeholder avatar-sm-text">{{ getInitial(user) }}</div>
+                    }
+                    <div class="user-names">
+                      <span class="user-display-name">{{ user.fullName || user.username }}</span>
+                      <span class="user-handle">@{{ user.username }}</span>
+                    </div>
+                  </td>
+                  <td class="email-cell">{{ user.email }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="{
+                      'badge-admin': user.role === 'ADMIN',
+                      'badge-user': user.role === 'USER',
+                      'badge-guest': user.role === 'GUEST'
+                    }">{{ user.role }}</span>
+                  </td>
+                  <td>
+                    <span class="badge" [ngClass]="{
+                      'badge-google': user.provider === 'GOOGLE',
+                      'badge-local': user.provider === 'LOCAL'
+                    }">
+                      @if (user.provider === 'GOOGLE') { <span class="material-icons badge-icon">g_translate</span> }
+                      {{ user.provider }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge" [ngClass]="{
+                      'badge-active': user.isActive,
+                      'badge-suspended': !user.isActive
+                    }">{{ user.isActive ? 'Active' : 'Suspended' }}</span>
+                  </td>
+                  <td>
+                    @if (user.isVerified) {
+                      <span class="material-icons verified-icon" title="Verified">verified</span>
+                    } @else if (user.verificationPending) {
+                      <span class="material-icons pending-icon" title="Pending">hourglass_top</span>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                  <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        @if (totalPages() > 1) {
+          <div class="pagination animate-item">
+            <button class="page-btn" [disabled]="!hasPrevPage()" (click)="goToPage(currentPage() - 1)">
+              <span class="material-icons">chevron_left</span>
+            </button>
+            @for (p of getPageNumbers(); track p) {
+              <button class="page-btn" [class.active]="p === currentPage()" (click)="goToPage(p)">{{ p + 1 }}</button>
+            }
+            <button class="page-btn" [disabled]="currentPage() >= totalPages() - 1" (click)="goToPage(currentPage() + 1)">
+              <span class="material-icons">chevron_right</span>
+            </button>
+            <span class="page-info">
+              {{ currentPage() * pageSize + 1 }}–{{ minOf((currentPage() + 1) * pageSize, totalElements()) }} of {{ formatNumber(totalElements()) }}
+            </span>
+          </div>
+        }
+      }
+    }
+
+  </div><!-- /admin-content -->
+</div><!-- /admin-container -->
+
+<!-- ═══ SIDE DRAWER OVERLAY ═══ -->
+@if (drawerOpen()) {
+  <div class="drawer-overlay" (click)="closeDrawer()"></div>
+
+  <div class="drawer" [class.drawer-open]="drawerOpen()">
+
+    <!-- Drawer header -->
+    <div class="drawer-header">
+      <h2 class="drawer-title">User Detail</h2>
+      <button class="btn btn-ghost btn-icon" (click)="closeDrawer()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    @if (drawerLoading()) {
+      <div class="drawer-loading">
+        <div class="spinner"></div>
+        <p>Loading…</p>
+      </div>
+    }
+
+    @if (!drawerLoading() && selectedUser()) {
+      <div class="drawer-body">
+
+        <!-- Avatar + name -->
+        <div class="drawer-profile">
+          @if (selectedUser()!.profilePicUrl) {
+            <img [src]="selectedUser()!.profilePicUrl" [alt]="selectedUser()!.username" class="avatar avatar-xl">
+          } @else {
+            <div class="avatar avatar-xl avatar-placeholder">{{ getInitial(selectedUser()) }}</div>
+          }
+          <div class="drawer-profile-text">
+            <h3>{{ selectedUser()!.fullName || selectedUser()!.username }}</h3>
+            <span class="drawer-handle">@{{ selectedUser()!.username }}</span>
+          </div>
+        </div>
+
+        <!-- Badges row -->
+        <div class="drawer-badges">
+          <span class="badge" [ngClass]="{
+            'badge-admin': selectedUser()!.role === 'ADMIN',
+            'badge-user': selectedUser()!.role === 'USER',
+            'badge-guest': selectedUser()!.role === 'GUEST'
+          }">{{ selectedUser()!.role }}</span>
+
+          <span class="badge" [ngClass]="{
+            'badge-google': selectedUser()!.provider === 'GOOGLE',
+            'badge-local': selectedUser()!.provider === 'LOCAL'
+          }">{{ selectedUser()!.provider }}</span>
+
+          <span class="badge" [ngClass]="{
+            'badge-active': selectedUser()!.isActive,
+            'badge-suspended': !selectedUser()!.isActive
+          }">{{ selectedUser()!.isActive ? 'Active' : 'Suspended' }}</span>
+
+          @if (selectedUser()!.isVerified) {
+            <span class="badge badge-verified"><span class="material-icons" style="font-size:13px">verified</span> Verified</span>
+          }
+        </div>
+
+        <!-- Info grid -->
+        <div class="info-grid">
+          <div class="info-row">
+            <span class="info-label"><span class="material-icons info-icon">email</span> Email</span>
+            <span class="info-value">{{ selectedUser()!.email }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label"><span class="material-icons info-icon">fingerprint</span> User ID</span>
+            <span class="info-value info-mono">{{ selectedUser()!.userId }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label"><span class="material-icons info-icon">calendar_today</span> Joined</span>
+            <span class="info-value">{{ formatDate(selectedUser()!.createdAt) }}</span>
+          </div>
+          @if (selectedUser()!.updatedAt) {
+            <div class="info-row">
+              <span class="info-label"><span class="material-icons info-icon">update</span> Updated</span>
+              <span class="info-value">{{ formatDate(selectedUser()!.updatedAt) }}</span>
+            </div>
+          }
+          @if (selectedUser()!.bio) {
+            <div class="info-row">
+              <span class="info-label"><span class="material-icons info-icon">notes</span> Bio</span>
+              <span class="info-value info-bio">{{ selectedUser()!.bio }}</span>
+            </div>
+          }
+          <div class="info-row">
+            <span class="info-label"><span class="material-icons info-icon">hourglass_top</span> Verification</span>
+            <span class="info-value">
+              @if (selectedUser()!.isVerified) { ✅ Verified }
+              @else if (selectedUser()!.verificationPending) { ⏳ Pending }
+              @else { ✗ Not requested }
+            </span>
+          </div>
+        </div>
+
+        <div class="drawer-divider"></div>
+
+        <!-- ══ Verification Approval ══ -->
+        @if (selectedUser()!.verificationPending && !selectedUser()!.isVerified) {
+          <div class="action-section">
+            <h4 class="action-section-title verify-title">
+              <span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">verified</span>
+              Verification Request
+            </h4>
+            <div class="verify-card">
+              <div class="verify-info">
+                <span class="material-icons verify-pending-icon">hourglass_top</span>
+                <div>
+                  <p class="verify-heading">Payment confirmed — awaiting approval</p>
+                  <p class="verify-sub">Approving will instantly grant the blue tick to this user.</p>
+                </div>
+              </div>
+              @if (!verificationApprovalDone() && !verificationDenialDone()) {
+                <div class="verify-action-btns">
+                  <button
+                    class="btn btn-verify-approve"
+                    (click)="approveVerification()"
+                    [disabled]="verificationApprovalLoading() || verificationDenialLoading()"
+                  >
+                    @if (verificationApprovalLoading()) {
+                      <span class="spinner-sm"></span> Approving…
+                    } @else {
+                      <span class="material-icons">verified</span> Approve & Grant Blue Tick
+                    }
+                  </button>
+                  
+                  <button
+                    class="btn btn-verify-deny"
+                    (click)="denyVerification()"
+                    [disabled]="verificationApprovalLoading() || verificationDenialLoading()"
+                  >
+                    @if (verificationDenialLoading()) {
+                      <span class="spinner-sm"></span> Refunding…
+                    } @else {
+                      <span class="material-icons">cancel</span> Deny & Refund
+                    }
+                  </button>
+                </div>
+              } @else if (verificationApprovalDone()) {
+                <div class="verify-success">
+                  <span class="material-icons">check_circle</span> Blue tick granted!
+                </div>
+              } @else if (verificationDenialDone()) {
+                <div class="verify-denied-result">
+                  <div class="denied-icon-row">
+                    <span class="material-icons denied-big-icon">block</span>
+                    <div>
+                      <p class="denied-title">Permission Denied</p>
+                      <p class="denied-sub">Verification request rejected. Refund has been initiated.</p>
+                    </div>
+                  </div>
+                  <p class="denied-retry">User can re-apply after <strong>{{ formatRetryDate(selectedUser()) }}</strong>.</p>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="drawer-divider"></div>
+        }
+
+        @if (isDenied(selectedUser()) && !selectedUser()!.verificationPending && !selectedUser()!.isVerified) {
+          <div class="action-section">
+            <h4 class="action-section-title deny-section-title">
+              <span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">block</span>
+              Verification Status
+            </h4>
+            <div class="verify-denied-result">
+              <div class="denied-icon-row">
+                <span class="material-icons denied-big-icon">block</span>
+                <div>
+                  <p class="denied-title">Permission Denied</p>
+                  <p class="denied-sub">This user's verification request was previously denied by an admin.</p>
+                </div>
+              </div>
+              <p class="denied-retry">User can re-apply after <strong>{{ formatRetryDate(selectedUser()) }}</strong>.</p>
+            </div>
+          </div>
+          <div class="drawer-divider"></div>
+        }
+
+        @if (selectedUser()!.isVerified) {
+          <div class="action-section">
+            <div class="verify-already-done">
+              <span class="material-icons">verified</span>
+              <span>This user already has blue tick verification.</span>
+            </div>
+          </div>
+          <div class="drawer-divider"></div>
+        }
+
+        <div class="action-section">
+          <h4 class="action-section-title">Change Role</h4>
+          @if (!pendingRoleChange()) {
+            <div class="role-btns">
+              @for (r of ['USER', 'ADMIN', 'GUEST']; track r) {
+                <button
+                  class="btn btn-secondary btn-sm role-btn"
+                  [class.role-btn-active]="selectedUser()!.role === r"
+                  [disabled]="selectedUser()!.role === r || actionLoading()"
+                  (click)="initiateRoleChange($any(r))"
+                >{{ r }}</button>
+              }
+            </div>
+          } @else {
+            <div class="confirm-panel">
+              <p>Change role to <strong>{{ pendingRoleChange() }}</strong>?</p>
+              <div class="confirm-btns">
+                <button class="btn btn-primary btn-sm" (click)="confirmRoleChange()" [disabled]="actionLoading()">
+                  @if (actionLoading()) { <span class="spinner-sm"></span> } Confirm
+                </button>
+                <button class="btn btn-ghost btn-sm" (click)="cancelRoleChange()">Cancel</button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="drawer-divider"></div>
+
+        <!-- Suspend / Reactivate -->
+        <div class="action-section">
+          <h4 class="action-section-title">Account Status</h4>
+          @if (selectedUser()!.isActive) {
+            <button class="btn btn-outline-danger btn-sm" (click)="toggleStatus()" [disabled]="actionLoading()">
+              <span class="material-icons">block</span>
+              @if (actionLoading()) { Working… } @else { Suspend User }
+            </button>
+          } @else {
+            <button class="btn btn-outline-success btn-sm" (click)="toggleStatus()" [disabled]="actionLoading()">
+              <span class="material-icons">check_circle</span>
+              @if (actionLoading()) { Working… } @else { Reactivate User }
+            </button>
+          }
+        </div>
+
+        <div class="drawer-divider"></div>
+
+        <!-- Delete -->
+        <div class="action-section">
+          <h4 class="action-section-title danger-title">Danger Zone</h4>
+          @if (!confirmDelete()) {
+            <button class="btn btn-danger btn-sm" (click)="requestDelete()" [disabled]="actionLoading()">
+              <span class="material-icons">delete_forever</span> Permanently Delete User
+            </button>
+          } @else {
+            <div class="confirm-panel danger-confirm">
+              <p>⚠️ This is <strong>permanent</strong>. Delete <strong>@{{ selectedUser()!.username }}</strong>?</p>
+              <div class="confirm-btns">
+                <button class="btn btn-danger btn-sm" (click)="executeDelete()" [disabled]="actionLoading()">
+                  @if (actionLoading()) { <span class="spinner-sm"></span> } Yes, delete forever
+                </button>
+                <button class="btn btn-ghost btn-sm" (click)="cancelDelete()">Cancel</button>
+              </div>
+            </div>
+          }
+        </div>
+
+      </div><!-- /drawer-body -->
+    }
+  </div><!-- /drawer -->
+}
