@@ -1,6 +1,16 @@
+type RuntimeEnvironment = {
+  apiUrl?: string;
+  googleClientId?: string;
+  razorpayKeyId?: string;
+};
+
+const runtimeEnvironment = (
+  globalThis as typeof globalThis & { __connectSphereEnv?: RuntimeEnvironment }
+).__connectSphereEnv ?? {};
+
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080',
-  googleClientId: '477600074333-gkl20052ns4g8v268o0ijida2f1fp9md.apps.googleusercontent.com',
-  razorpayKeyId: 'rzp_test_ShHMWSdURfD9R6'
+  apiUrl: runtimeEnvironment.apiUrl ?? 'http://localhost:8080',
+  googleClientId: runtimeEnvironment.googleClientId ?? '',
+  razorpayKeyId: runtimeEnvironment.razorpayKeyId ?? ''
 };

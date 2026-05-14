@@ -2,6 +2,9 @@
   "name": "connect-sphere",
   "version": "0.0.0",
   "scripts": {
+    "prestart": "node ./scripts/generate-frontend-env.mjs",
+    "prebuild": "node ./scripts/generate-frontend-env.mjs",
+    "prewatch": "node ./scripts/generate-frontend-env.mjs",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",

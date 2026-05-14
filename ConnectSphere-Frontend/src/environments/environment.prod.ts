@@ -1,5 +1,16 @@
+type RuntimeEnvironment = {
+  apiUrl?: string;
+  googleClientId?: string;
+  razorpayKeyId?: string;
+};
+
+const runtimeEnvironment = (
+  globalThis as typeof globalThis & { __connectSphereEnv?: RuntimeEnvironment }
+).__connectSphereEnv ?? {};
+
 export const environment = {
   production: true,
-  apiUrl: 'https://api.connectsphere.com',
-  googleClientId: '477600074333-gkl20052ns4g8v268o0ijida2f1fp9md.apps.googleusercontent.com'
+  apiUrl: runtimeEnvironment.apiUrl ?? 'https://api.connectsphere.com',
+  googleClientId: runtimeEnvironment.googleClientId ?? '',
+  razorpayKeyId: runtimeEnvironment.razorpayKeyId ?? ''
 };
